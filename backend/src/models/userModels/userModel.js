@@ -1,4 +1,3 @@
-// model/User.js
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -10,13 +9,27 @@ const createUser = async (userData) => {
       return newUser;
     } catch (error) {
       if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
-        // Gérer l'erreur d'unicité pour l'adresse e-mail ici
         throw new Error('L\'adresse e-mail est déjà utilisée.');
       } else {
-        // Gérer d'autres erreurs ici
         throw new Error('Une erreur s\'est produite lors de l\'enregistrement de l\'utilisateur.');
       }
     }
   };
+  const findUserByIdentity = async (identity) => {
+    return await prisma.user.findFirst({
+      where: {
+        OR: [
+          {
+            email: identity // Utiliser l'identifiant fourni comme email
+          },
+          {
+            phoneNumber: identity // Ou comme numéro de téléphone
+          }
+        ]
+      }
+    });
+  };
+  
+  
 
-module.exports = { createUser };
+module.exports = { createUser, findUserByIdentity };

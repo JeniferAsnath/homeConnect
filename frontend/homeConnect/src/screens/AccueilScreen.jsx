@@ -17,8 +17,8 @@ export default function AccueilScreen({ navigation }) {
         <Text className=" text-center font-bold my-8 ">
           Connectez-vous aux Meilleures Locations de Maisons
         </Text>
-        <Bouton name="Se connecter" onPress={() => navigation.navigate("Se connecter")} />
-        <Bouton name="S'enregistrer" onPress={() => navigation.navigate("S'enregistrer")} />
+        <Bouton name="Se connecter" onPress={() => navigation.navigate("Login")} />
+        <Bouton name="S'enregistrer" onPress={() => navigation.navigate("Signup")} />
 
       </View>
     </View>

@@ -1,22 +1,28 @@
-import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-
+import React from "react";
+import {
+  ScrollView,
+  Text,
+  Button,
+  StyleSheet,
+  SafeAreaView,
+} from "react-native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { WelcomeUser, Hea } from "../components";
 export default function HomeScreen({ navigation }) {
+  const Stack = createStackNavigator();
   return (
-    <View style={styles.container}>
-      <Text>Home Screen</Text>
-      <Button title="Favorites" onPress={() => navigation.navigate('Favorites')} />
-      <Button title="Explore" onPress={() => navigation.navigate('Explore')} />
-      <Button title="Messages" onPress={() => navigation.navigate('Messages')} />
-      <Button title="Profile" onPress={() => navigation.navigate('Profile')} />
-    </View>
+    <SafeAreaView>
+      <Stack.Screen options={h} />
+
+      <ScrollView></ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -1,8 +1,8 @@
-import { View, Text, TextInput } from "react-native";
+import { View, Text, TextInput,Alert } from "react-native";
 import React, { useState, useRef } from "react";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Header from "../components/Header";
+import Header from "../components/StyleLogin";
 
 export default function LoginScreen(props) {
   const navigation = useNavigation();
@@ -17,8 +17,7 @@ export default function LoginScreen(props) {
     };
 
     try {
-      // Envoi des données de connexion au serveur
-      const response = await fetch("http://votre-api.com/login", {
+      const response = await fetch("http://192.168.164.89:8001/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,6 +27,7 @@ export default function LoginScreen(props) {
 
       if (response.ok) {
         // Connexion réussie
+        navigation.navigate("Main"); // Redirection vers la page d'accueil
         Alert.alert("Success", "Vous êtes connecté avec succès !");
       } else {
         // Erreur de connexion
@@ -96,7 +96,7 @@ export default function LoginScreen(props) {
       </View>
       <View className="flex-row justify-center">
         <Text>Don't have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.push("S'enregistrer")}>
+        <TouchableOpacity onPress={() => navigation.push("Signup")}>
           <Text className="text-base-color">SignUp</Text>
         </TouchableOpacity>
       </View>

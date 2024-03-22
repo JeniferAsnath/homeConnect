@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StatusBar } from 'expo';
-import Home from "../screens/Home.jsx";
+import Home from "../screens/HomeScreen.jsx";
 import Explore from "../screens/ExploreScreen.jsx";
 import Favorite from "../screens/FavoriteScreen.jsx";
 import Message from "../screens/MessagerieScreen.jsx";
@@ -52,7 +52,7 @@ export default function Tabs() {
   ];
 
   return (
-    <NavigationContainer>
+   
       <Tab.Navigator
         initialRouteName={"Home"}
         screenOptions={{ 
@@ -72,7 +72,7 @@ export default function Tabs() {
           />
         ))}
       </Tab.Navigator>
-    </NavigationContainer>
+    
   );
 }
 

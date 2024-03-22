@@ -7,11 +7,13 @@ import {
   TextInput,
   View,
   Alert,
+  KeyboardAvoidingView,
+  Keyboard,
   ScrollView,
   Modal,
 } from "react-native";
 import PhoneInput from "react-native-phone-number-input";
-import Header from "../components/Header copy.jsx";
+import Header from "../components/StyleLogin copy.jsx";
 
 export default function SignUpScreen() {
   const navigation = useNavigation();
@@ -30,6 +32,9 @@ export default function SignUpScreen() {
   const [visible, setVisible] = useState(false);
   const phoneInput = useRef(null);
 
+  
+
+  
   const validateNom = (value) => {
     const isValid = /^[A-Za-z]{3,25}$/.test(value);
     setIsValidNom(isValid && value !== "");
@@ -58,6 +63,8 @@ export default function SignUpScreen() {
     if (!isValid && value !== "") setErrorText("Mot de passe invalide.");
   };
 
+ 
+
   const validatePhone = () => {
     return true;
   };
@@ -70,7 +77,7 @@ export default function SignUpScreen() {
     setPhoneNumber(value);
   };
   const handleSignUp = async () => {
-    if (!validationAll()) {
+    if (!validationAll() == false ) {
       Alert.alert("Erreur", "Veuillez remplir tous les champs correctement.", [
         { text: "OK", onPress: () => console.log("OK Pressed") },
       ]);
@@ -99,7 +106,8 @@ export default function SignUpScreen() {
     }
 
     try {
-      const userData = await axios.post("http://172.20.10.8:8001/signup", {
+      // const phoneNumber = phoneInput.current?.getValue();
+      const userData = await axios.post("http://192.168.164.89:8001/signup", {
         lastName: nom,
         firstName: prenom,
         phoneNumber: phoneNumber,
@@ -107,9 +115,10 @@ export default function SignUpScreen() {
         password,
         userType,
       });
+      // await sendSignUpData(userData);
 
       Alert.alert("Félicitation", "Enregistrement réussi !", [
-        { text: "OK", onPress: () => navigation.navigate("Home") },
+        { text: "OK", onPress: () => navigation.navigate("Se connecter") },
       ]);
     } catch (error) {
       console.log(JSON.parse(JSON.stringify(error)));
@@ -119,6 +128,8 @@ export default function SignUpScreen() {
         "Une erreur s'est produite lors de l'inscription. Veuillez réessayer plus tard.",
         [{ text: "OK", onPress: () => console.log("OK Pressed") }]
       );
+      // console.log("phoneInput:", phoneInput);
+      // console.log("phoneInput.current:", phoneInput);
     }
   };
 
@@ -238,7 +249,7 @@ export default function SignUpScreen() {
 
       <View className="flex-row justify-center">
         <Text>Already have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.push("Se connecter")}>
+        <TouchableOpacity onPress={() => navigation.push("Login")}>
           <Text className="text-base-color">Login</Text>
         </TouchableOpacity>
       </View>

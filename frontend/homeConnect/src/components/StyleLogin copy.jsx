@@ -10,7 +10,7 @@ export default function Header(props) {
     <StatusBar hidden />
     
       <View className="flesbg h-[10%] mb-12 ">
-        <View className="flex-row  bg-regal-blue h-full  ">
+        <View className="flex-row  bg-regal-blue h-full w-full ">
           <Image
             source={Light}
             resizeMode="contain"
