@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Logo from "../components/Logo.jsx";
 import background from "../../assets/retro-living-room-interior-design.jpg";
@@ -12,15 +12,16 @@ export default function SplashScreen({ navigation }) {
   }, []);
 
   return (
-    <View className="flex-1 ">
+    <View className="flex-1 items-center justify-center">
       <StatusBar hidden />
-      <ImageBackground
-        source={background}
-        className="flex-1 justify-center "
-        resizeMode="cover"
-      >
-        <Logo />
-      </ImageBackground>
+        <Image 
+          source={require("../../assets/icon.png")}
+          resizeMode="contain"
+          className="h-[100px]"
+         />
+         <Text className="font-extrabold text-[#F4511E] text-2xl">
+          homeConnect
+        </Text>
     </View>
   );
 }

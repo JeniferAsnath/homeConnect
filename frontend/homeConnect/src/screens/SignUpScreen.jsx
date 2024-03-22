@@ -1,83 +1,247 @@
 import React, { useState, useRef } from "react";
-import { TouchableOpacity, Text, TextInput, View } from "react-native";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+import {
+  TouchableOpacity,
+  Text,
+  TextInput,
+  View,
+  Alert,
+  ScrollView,
+  Modal,
+} from "react-native";
 import PhoneInput from "react-native-phone-number-input";
-import Header from "../components/Header";
+import Header from "../components/Header copy.jsx";
 
 export default function SignUpScreen() {
+  const navigation = useNavigation();
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userType, setUserType] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isValidNom, setIsValidNom] = useState(true);
+  const [isValidPrenom, setIsValidPrenom] = useState(true);
+  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isValidPassword, setIsValidPassword] = useState(true);
+  const [isValidPhone, setIsValidPhone] = useState(true);
+  const [errorText, setErrorText] = useState("");
+  const [userType, setUserType] = useState(null);
+  const [visible, setVisible] = useState(false);
   const phoneInput = useRef(null);
 
-  const handleSignUp = () => {
-    if (!nom || !prenom || !phoneInput.current || !email || !password || !userType) {
-      console.log("Veuillez remplir tous les champs.");
+  const validateNom = (value) => {
+    const isValid = /^[A-Za-z]{3,25}$/.test(value);
+    setIsValidNom(isValid && value !== "");
+    setNom(value);
+    if (!isValid && value !== "") setErrorText("Nom invalide.");
+  };
+
+  const validatePrenom = (value) => {
+    const isValid = /^[A-Za-z]{3,25}$/.test(value);
+    setIsValidPrenom(isValid && value !== "");
+    setPrenom(value);
+    if (!isValid && value !== "") setErrorText("Prénom invalide.");
+  };
+
+  const validateEmail = (value) => {
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    setIsValidEmail(isValid && value !== "");
+    setEmail(value);
+    if (!isValid && value !== "") setErrorText("Email invalide.");
+  };
+
+  const validatePassword = (value) => {
+    const isValid = /[A-Za-z\d@$!%*?&]{8,}/.test(value);
+    setIsValidPassword(isValid && value !== "");
+    setPassword(value);
+    if (!isValid && value !== "") setErrorText("Mot de passe invalide.");
+  };
+
+  const validatePhone = () => {
+    return true;
+  };
+  const handleUserTypeSelection = async (type) => {
+    setUserType(type);
+    setVisible(false);
+    await signUpUser();
+  };
+  const handlePhoneInputChange = (value) => {
+    setPhoneNumber(value);
+  };
+  const handleSignUp = async () => {
+    if (!validationAll()) {
+      Alert.alert("Erreur", "Veuillez remplir tous les champs correctement.", [
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ]);
       return;
     }
 
-    console.log("Formulaire valide, inscription en cours...");
+    setVisible(true);
+  };
+
+  const validationAll = () => {
+    const returns =
+      validateNom(nom) &&
+      validatePrenom(prenom) &&
+      validatePhone(phoneNumber) &&
+      validateEmail(email) &&
+      validatePassword(password);
+    return returns;
+  };
+
+  const signUpUser = async () => {
+    if (userType == null) {
+      Alert.alert("Erreur", "Veuillez sélectionner un type d'utilisateur.", [
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ]);
+      return;
+    }
+
+    try {
+      const userData = await axios.post("http://172.20.10.8:8001/signup", {
+        lastName: nom,
+        firstName: prenom,
+        phoneNumber: phoneNumber,
+        email,
+        password,
+        userType,
+      });
+
+      Alert.alert("Félicitation", "Enregistrement réussi !", [
+        { text: "OK", onPress: () => navigation.navigate("Home") },
+      ]);
+    } catch (error) {
+      console.log(JSON.parse(JSON.stringify(error)));
+      console.error("Erreur lors de l'inscription :", error);
+      Alert.alert(
+        "Erreur",
+        "Une erreur s'est produite lors de l'inscription. Veuillez réessayer plus tard.",
+        [{ text: "OK", onPress: () => console.log("OK Pressed") }]
+      );
+    }
   };
 
   return (
-    <View style={{  backgroundColor: "white" }}>
-      <Header  />
-      <Text style={{ fontWeight: "bold", fontSize: 20, paddingLeft: 10, paddingTop: 20 }}>
+    <ScrollView className="bg-white h-full w-full">
+      <Header />
+      <Text className="font-bold tracking-wider pl-8 pt-8  text-base-color text-2xl ">
         Sign Up
       </Text>
 
-      <View style={{ alignItems: "center", marginHorizontal: 20, marginTop: 10 }}>
-        <View style={{ backgroundColor: "rgba(0,0,0,0.1)", padding: 10, borderRadius: 10, width: "100%", marginBottom: 10 }}>
+      <View className="flex  p-4 space-y-3">
+        <View className="bg-gris p-4 rounded-2xl w-full ">
           <TextInput
             placeholder="Nom"
             placeholderTextColor={"gray"}
             value={nom}
-            onChangeText={setNom}
+            onChangeText={validateNom}
           />
         </View>
-        <View style={{ backgroundColor: "rgba(0,0,0,0.1)", padding: 10, borderRadius: 10, width: "100%", marginBottom: 10 }}>
+        {!isValidNom && <Text style={{ color: "red" }}>Nom invalide</Text>}
+        <View className="bg-gris p-4 rounded-2xl w-full ">
           <TextInput
             placeholder="Prénom"
             placeholderTextColor={"gray"}
             value={prenom}
-            onChangeText={setPrenom}
+            onChangeText={validatePrenom}
           />
         </View>
-        <View style={{ backgroundColor: "rgba(0,0,0,0.1)", padding: 10, borderRadius: 10, width: "100%", marginBottom: 10 }}>
+        {!isValidPrenom && (
+          <Text style={{ color: "red" }}>Prénom invalide</Text>
+        )}
+        <View className="bg-gris p-1  rounded-2xl w-full ">
           <PhoneInput
             ref={phoneInput}
             defaultValue=""
-            defaultCode="FR"
+            defaultCode="CD"
             layout="first"
+            textContainerStyle={{
+              backgroundColor: "#f5f8fa",
+              height: 55,
+            }}
+            countryPickerButtonStyle={{
+              backgroundColor: "#f0f4f6",
+            }}
+            value={phoneNumber}
+            onChangeText={handlePhoneInputChange}
           />
         </View>
-        <View style={{ backgroundColor: "rgba(0,0,0,0.1)", padding: 10, borderRadius: 10, width: "100%", marginBottom: 10 }}>
+        {!isValidPhone && (
+          <Text style={{ color: "red" }}>Numéro de téléphone invalide</Text>
+        )}
+        <View className="bg-gris p-4 rounded-2xl w-full ">
           <TextInput
             placeholder="Email"
             placeholderTextColor={"gray"}
             value={email}
-            onChangeText={setEmail}
+            onChangeText={validateEmail}
           />
         </View>
-        <View style={{ backgroundColor: "rgba(0,0,0,0.1)", padding: 10, borderRadius: 10, width: "100%", marginBottom: 10 }}>
+        {!isValidEmail && <Text style={{ color: "red" }}>Email invalide</Text>}
+        <View className="bg-gris p-3 rounded-2xl w-full ">
           <TextInput
             placeholder="Mot de passe"
             placeholderTextColor={"gray"}
             secureTextEntry={true}
             value={password}
-            onChangeText={setPassword}
+            onChangeText={validatePassword}
           />
         </View>
+        {!isValidPassword && (
+          <Text style={{ color: "red" }}>Mot de passe invalide</Text>
+        )}
+
         <TouchableOpacity
           onPress={handleSignUp}
-          style={{ backgroundColor: "#0069D9", padding: 10, borderRadius: 10, width: "100%", marginBottom: 10 }}
+          className="w-full   bg-regal-blue p-2 shadow-inherit shadow-2xl rounded-full"
         >
-          <Text style={{ fontSize: 18, fontWeight: "bold", color: "white", textAlign: "center" }}>
+          <Text className="text-lg font-bold text-white text-white text-center ">
             Enregistrer
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+      <Modal
+        visible={visible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setVisible(false)}
+      >
+        <View
+          className="flex-1 justify-center self-end items-end  "
+          // style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <View
+            className="flex justify-center  bg-white rounded-xl"
+            style={{ backgroundColor: "white", padding: 20, borderRadius: 10 }}
+          >
+            <Text>Choisissez votre type d'utilisateur :</Text>
+            <TouchableOpacity
+              onPress={() => handleUserTypeSelection("visiteur")}
+              className="  bg-regal-blue p-2 shadow-inherit shadow-2xl rounded-full"
+            >
+              <Text className="text-lg font-bold text-white text-white text-center ">
+                Visiteur
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleUserTypeSelection("bailleur")}
+              className="  bg-regal-blue p-2 shadow-inherit shadow-2xl rounded-full"
+            >
+              <Text className="text-lg font-bold text-white text-white text-center ">
+                Bailleur
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <View className="flex-row justify-center">
+        <Text>Already have an account?</Text>
+        <TouchableOpacity onPress={() => navigation.push("Se connecter")}>
+          <Text className="text-base-color">Login</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }

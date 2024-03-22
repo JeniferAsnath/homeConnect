@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  firstName     String         @db.VarChar(255)
+  lastName      String         @db.VarChar(255)
+  email         String         @unique @db.VarChar(255)
+  phoneNumber   String         @unique @db.VarChar(255)
+  password      String
+  userType      String
+  buyers        Buyer[]
+  visitors      Visitor[]
+  comments      Comment[]
+  evaluations   Evaluation[]
+  notifications Notification[]
+}
+
+model Buyer {
+  id           Int           @id
+  user         User          @relation(fields: [userId], references: [id])
+  userId       Int
+  // favorites     Favorite[]
+  reservations Reservation[]
+  House        House[]
+}
+
+model Visitor {
+  id           Int           @id
+  user         User          @relation(fields: [userId], references: [id])
+  userId       Int
+  favorites    Favorite[]
+  houses       House[]
+  reservations Reservation[]
+}
+
+model Address {
+  id         Int     @id @default(autoincrement())
+  street     String
+  city       String
+  postalCode String
+  country    String
+  houses     House[]
+}
+
+model House {
+  id            Int           @id @default(autoincrement())
+  title         String
+  address       Address       @relation(fields: [addressId], references: [id])
+  addressId     Int
+  numberOfRooms Int
+  price         Float
+  buyer         Buyer?        @relation(fields: [buyerId], references: [id])
+  buyerId       Int?
+  favorites     Favorite[]
+  reservations  Reservation[]
+  Visitor       Visitor?      @relation(fields: [visitorId], references: [id])
+  visitorId     Int?
+  Comment       Comment[]
+  Evaluation    Evaluation[]
+}
+
+model Favorite {
+  id        Int     @id @default(autoincrement())
+  visitor   Visitor @relation(fields: [visitorId], references: [id])
+  visitorId Int
+  house     House   @relation(fields: [houseId], references: [id])
+  houseId   Int
+}
+
+model Reservation {
+  id        Int      @id @default(autoincrement())
+  visitDate DateTime
+  visitor   Visitor  @relation(fields: [visitorId], references: [id])
+  visitorId Int
+  house     House    @relation(fields: [houseId], references: [id])
+  houseId   Int
+  Buyer     Buyer?   @relation(fields: [buyerId], references: [id])
+  buyerId   Int?
+}
+
+model Comment {
+  id      Int      @id @default(autoincrement())
+  content String
+  date    DateTime
+  user    User     @relation(fields: [userId], references: [id])
+  userId  Int
+  house   House    @relation(fields: [houseId], references: [id])
+  houseId Int
+}
+
+model Evaluation {
+  id      Int      @id @default(autoincrement())
+  rating  Int
+  comment String?
+  date    DateTime
+  user    User     @relation(fields: [userId], references: [id])
+  userId  Int
+  house   House    @relation(fields: [houseId], references: [id])
+  houseId Int
+}
+
+model Notification {
+  id      Int      @id @default(autoincrement())
+  type    String
+  content String
+  date    DateTime
+  status  String
+  user    User     @relation(fields: [userId], references: [id])
+  userId  Int
+}
