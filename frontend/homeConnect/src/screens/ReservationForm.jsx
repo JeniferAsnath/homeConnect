@@ -1,10 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-export default function Message() {
+const ReservationForm = () => {
   return (
     <View>
-      <Text>Message</Text>
+      <Text>ReservationForm</Text>
     </View>
   )
 }
+
+export default ReservationForm

@@ -9,7 +9,8 @@ module.exports = {
       colors: {
         'regal-blue': '#326383',
         'base-color': '#F4511E',
-        'gris': '#f5f8fa'
+        'gris': '#f5f8fa',
+        'beige': '#EFE8C7',
       },
     },
   },

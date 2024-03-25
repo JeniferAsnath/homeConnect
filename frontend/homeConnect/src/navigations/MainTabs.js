@@ -5,14 +5,15 @@ import Home from "../screens/HomeScreen.jsx";
 import Explore from "../screens/ExploreScreen.jsx";
 import Favorite from "../screens/FavoriteScreen.jsx";
 import Message from "../screens/MessagerieScreen.jsx";
-import Profile from "../screens/ProfileScreen.jsx";
+import Profile from "../screens/profile/ProfileScreen.jsx";
+import ProfileBaiScreen from '../screens/profile/ProfileBaiScreen.jsx';
+import ProfileVisitor from '../screens/profile/ProfileVisitor.jsx';
 import { NavigationContainer } from '@react-navigation/native';
 import { StyleSheet } from "react-native";
 import TabButton from './TabButton.js';
 
 const Tab = createBottomTabNavigator();
-
-export default function Tabs() {
+const MainTabs = () => {
   const tabs = [
     {
       id: 1,
@@ -47,12 +48,12 @@ export default function Tabs() {
       name: "Profile",
       screen: "Profile",
       icon: "account",
-      Component: Profile
+      Component: ProfileVisitor
     },
   ];
 
   return (
-   
+   <>
       <Tab.Navigator
         initialRouteName={"Home"}
         screenOptions={{ 
@@ -72,7 +73,7 @@ export default function Tabs() {
           />
         ))}
       </Tab.Navigator>
-    
+      </>
   );
 }
 
@@ -91,3 +92,4 @@ const styles = StyleSheet.create({
     shadowOpacity: 1
   }
 });
+export default MainTabs;

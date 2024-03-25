@@ -15,6 +15,6 @@ app.use("/signup", userSignup);
 app.use('/login', userLogin);
 app.use("/user", userRoutes)
 
-app.listen(PORT, "192.168.164.89", () => {
+app.listen(PORT, "192.168.242.89", () => {
   console.log(`App listening on port ${PORT}`);
 });

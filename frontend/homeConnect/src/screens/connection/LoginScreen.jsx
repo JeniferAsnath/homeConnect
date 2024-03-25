@@ -2,7 +2,7 @@ import { View, Text, TextInput,Alert } from "react-native";
 import React, { useState, useRef } from "react";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Header from "../components/StyleLogin";
+import Header from "../../components/StyleLogin";
 
 export default function LoginScreen(props) {
   const navigation = useNavigation();
@@ -17,7 +17,7 @@ export default function LoginScreen(props) {
     };
 
     try {
-      const response = await fetch("http://192.168.164.89:8001/login", {
+      const response = await fetch("http://192.168.242.89:8001/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

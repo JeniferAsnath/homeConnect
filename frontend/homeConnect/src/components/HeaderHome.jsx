@@ -1,61 +1,28 @@
-import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet } from "react-native";
-import PhoneInput from "react-native-phone-input";
-import ModalPicker from 'react-native-modal-picker'
-import ModalPickerImage from 'react-native-image-picker'
+import { Image, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Material from "react-native-vector-icons/MaterialCommunityIcons";
+import { Avatar } from "react-native-elements";
+// import styles from "./screenheader.style";
 
-export default function Telephone() {
-  const phoneRef = useRef(null);
-  const countryPickerRef = useRef(null);
-  const [pickerData, setPickerData] = useState([]);
-
-  useEffect(() => {
-    if (phoneRef.current) {
-      setPickerData(phoneRef.current.getPickerData());
-    }
-  }, []);
-
-  const onPressFlag = () => {
-    if (countryPickerRef.current) {
-      countryPickerRef.current.open();
-    }
-  };
-
-  const selectCountry = (country) => {
-    if (phoneRef.current) {
-      phoneRef.current.selectCountry(country.iso2);
-    }
-  };
-
+const HeaderHome = ({ imageUrl, icon, dimension, size, handlePress,icone,style,  onPress}) => {
   return (
-    <View style={styles.container}>
-      <PhoneInput
-        ref={phoneRef}
-        onPressFlag={onPressFlag}
-        initialCountry={"us"}
-        initialValue="13178675309"
-        textProps={{
-          placeholder: "Enter a phone number...",
-        }}
-      />
-
-      {/* <ModalPickerImage
-        ref={countryPickerRef}
-        data={pickerData}
-        onChange={(country) => {
-          selectCountry(country);
-        }}
-        cancelText="Cancel"
-      /> */}
-    </View>
+    <SafeAreaView className="flex-row   justify-between py-3 px-4 "  >
+      <TouchableOpacity onPress={onPress}>
+       {imageUrl && <Avatar rounded  size={dimension} source={imageUrl}></Avatar>}
+        {icone && <Material
+          name={icone}
+          color={style}
+          size={size}
+        />}
+      </TouchableOpacity>
+      <TouchableOpacity className="" onPress={handlePress}>
+        <Material
+          name={icon}
+          size={size}
+        />
+      </TouchableOpacity>
+    </SafeAreaView>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff', // couleur de fond de l'élément
-  },
-});
+export default HeaderHome;

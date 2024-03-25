@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, Button, StyleSheet, Image,ImageBackground } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import maison from "../../assets/rendu-3d-du-modele-maison.jpg";
-import Bouton from "../components/Bouton.jsx";
+import maison from "../../../assets/rendu-3d-du-modele-maison.jpg";
+import Bouton from "../../components/Bouton.jsx";
 
 export default function AccueilScreen({ navigation }) {
   return (

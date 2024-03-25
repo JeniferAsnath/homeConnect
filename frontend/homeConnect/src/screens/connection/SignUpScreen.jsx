@@ -13,7 +13,7 @@ import {
   Modal,
 } from "react-native";
 import PhoneInput from "react-native-phone-number-input";
-import Header from "../components/StyleLogin copy.jsx";
+import Header from "../../components/StyleLogin copy.jsx";
 
 export default function SignUpScreen() {
   const navigation = useNavigation();
@@ -107,7 +107,7 @@ export default function SignUpScreen() {
 
     try {
       // const phoneNumber = phoneInput.current?.getValue();
-      const userData = await axios.post("http://192.168.164.89:8001/signup", {
+      const userData = await axios.post("http://192.168.242.89:8001/signup", {
         lastName: nom,
         firstName: prenom,
         phoneNumber: phoneNumber,
@@ -118,7 +118,7 @@ export default function SignUpScreen() {
       // await sendSignUpData(userData);
 
       Alert.alert("Félicitation", "Enregistrement réussi !", [
-        { text: "OK", onPress: () => navigation.navigate("Se connecter") },
+        { text: "OK", onPress: () => navigation.navigate("Login") },
       ]);
     } catch (error) {
       console.log(JSON.parse(JSON.stringify(error)));

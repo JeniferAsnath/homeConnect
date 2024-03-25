@@ -1,10 +1,9 @@
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { ScrollView, View, Text, TouchableOpacity } from "react-native";
 import React from "react";
-import HeaderHome from "../components/HeaderHome";
-import HomeCard from "../components/homes/HomeCard";
-import casa from "../../assets/rendu-3d-du-modele-maison.jpg";
+import HomeCard from "./HomeCard.jsx";
+import casa from "../../../assets/rendu-3d-du-modele-maison.jpg";
 
-export default function Favorite() {
+const ListOfHome = () => {
   const homes = [
     {
       id: 1,
@@ -80,34 +79,34 @@ export default function Favorite() {
     },
   ];
   return (
-    <View>
-      <HeaderHome icone={"chevron-left-box"} style={"#F4511E"} size={25} />
-      <View>
-        <Text className="px-4 font-bold">Favorite home</Text>
+    <ScrollView className="h-full px-6 space-y-1 py-1">
+      <Text className="font-bold text-xl ">List of home</Text>
+      <View className="flex-row justify-between py-1">
+        <Text className=" font-light pb-3 ">200 homes</Text>
         <TouchableOpacity>
-          <Text> </Text>
+          <Text className="font-bold text-regal-blue underline ">See all</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView>
-        {homes.map((f) => (
-          <View className=" bg-black/5 rounded-xl m-4">
-            <HomeCard
-              key={f.id}
-              image={f.image}
-              like={f.like}
-              size={f.size}
-              icon={f.icon}
-              bed={f.bed}
-              adress={f.adress}
-              pays={f.pays}
-              nbrBed={f.nbrBed}
-              price={f.price}
-              favorite={"flex"}
-            />
-          </View>
-        ))}
-      </ScrollView>
-      <Text>Favorite</Text>
-    </View>
+
+      {homes.map((item) => (
+        <View className=" bg-black/5 mb-3 rounded-xl">
+          
+          <HomeCard
+            key={item.id}
+            image={item.image}
+            like={item.like}
+            size={item.size}
+            icon={item.icon}
+            bed={item.bed}
+            adress={item.adress}
+            pays={item.pays}
+            nbrBed={item.nbrBed}
+            price={item.price}
+            home={''}
+          />
+        </View>
+      ))}
+    </ScrollView>
   );
-}
+};
+export default ListOfHome;

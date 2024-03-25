@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import Logo from "../components/Logo.jsx";
-import background from "../../assets/retro-living-room-interior-design.jpg";
+import Logo from "../../components/Logo.jsx";
+import background from "../../../assets/retro-living-room-interior-design.jpg";
 
 export default function SplashScreen({ navigation }) {
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function SplashScreen({ navigation }) {
     <View className="flex-1 items-center justify-center">
       <StatusBar hidden />
         <Image 
-          source={require("../../assets/icon.png")}
+          source={require("../../../assets/icon.png")}
           resizeMode="contain"
           className="h-[100px]"
          />
