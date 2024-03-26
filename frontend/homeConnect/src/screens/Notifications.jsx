@@ -1,70 +1,42 @@
-import React from 'react'
-import Notification from '../components/notification/Notification'
-import { View, Text, TouchableOpacity } from "react-native";
-import HeaderHome from "../components/HeaderHome";
-import Message from "../components/message/Message";
-import profile1 from "../../assets/IMGA.jpg";
-import profile2 from "../../assets/profile-pic(3).png";
+// import * as Notifications from 'expo-notifications';
 
-export default function Messagerie() {
-  const messages = [
-    {
-      id: 1,
-      nom: "jen",
-      profile: profile1,
-      date: "24 mars 2024",
-      message: " hey salut",
-    },
-    {
-      id: 2,
-      nom: "jen",
-      profile: profile2,
-      date: "24 mars 2024",
-      message: " comment vous allez?",
-    },
-    {
-      id: 3,
-      nom: "jen",
-      profile: profile1,
-      date: "24 mars 2024",
-      message: " hey salut",
-    },
-    {
-      id: 4,
-      nom: "jen",
-      profile: profile2,
-      date: "24 mars 2024",
-      message: "comment vous allez?",
+// const requestNotificationPermissions = async () => {
+//   const { status } = await Notifications.requestPermissionsAsync({
+//     android: PermissionsAndroid.PERMISSIONS.NOTIFICATION_ACCESS,
+//     ios: {
+//       alert: true,
+//       badge: true,
+//       sound: true,
+//     },
+//   });
+//   if (status !== 'granted') {
+//     console.error('Notification permission NOT granted!');
+//   }
+// };
 
-    },
-    {
-      id: 5,
-      nom: "jen",
-      profile: profile1,
-      date: "24 mars 2024",
-      message: " hey salut",
-    },
-  ];
-  return (
-    <View className="">
-      <HeaderHome icone={"chevron-left-box"} style={"#F4511E"} size={25} />
-      <View className="flex-row justify-between px-4">
-        <Text className="font-bold">Messages</Text>
-        <TouchableOpacity>
-          <Text className="text-regal-blue underline">View all</Text>
-        </TouchableOpacity>
-      </View>
-      {messages.map((a) => (
-        <View>
-          <Message
-            key={a.id}
-            image={a.profile}
-            nom={a.nom}
-            message={a.message}
-            date={a.date}
-          />
-        </View>
-      ))}
-    </View>
-  );
-}
+// // Fonction pour enregistrer le bailleur pour les notifications
+// const registerForPushNotifications = async () => {
+//   try {
+//     // Demander la permission à l'utilisateur pour les notifications
+//     const { status } = await Notifications.requestPermissionsAsync();
+    
+//     // Vérifier si la permission a été accordée
+//     if (status !== 'granted') {
+//       console.log('Permission de notification refusée');
+//       return;
+//     }
+    
+//     // Récupérer le token d'inscription pour les notifications
+//     const token = (await Notifications.getExpoPushTokenAsync()).data;
+
+//     // Enregistrer le token d'inscription dans votre base de données
+//     // Vous devez implémenter cette partie en fonction de votre backend
+
+//     console.log('Token d\'inscription:', token);
+//   } catch (error) {
+//     console.error('Erreur lors de l\'inscription aux notifications :', error);
+//   }
+// };
+
+// // Appeler la fonction pour enregistrer les notifications lorsque le bailleur publie une offre
+// registerForPushNotifications();

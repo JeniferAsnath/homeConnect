@@ -3,22 +3,23 @@ import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { SafeAreaView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+// import { SafeAreaView } from "react-native";
 import MainTabs from "./src/navigations/MainTabs.js";
 import SplashScreen from "./src/screens/accueil/SplashScreen.jsx";
 import AccueilScreen from "./src/screens/accueil/AccueilScreen.jsx";
 import LoginScreen from "./src/screens/connection/LoginScreen.jsx";
 import SignupScreen from "./src/screens/connection/SignUpScreen.jsx";
 import NotificationScreen from "./src/screens/Notifications.jsx";
-import Profile from "./src/screens/profile/ProfileBaiScreen.jsx";
-import ProfileBaiScreen from "./src/screens/profile/ProfileBaiScreen.jsx";
+import Profile from "./src/screens/profile/ProfileScreen.jsx";
+import ProfileVisitor from "./src/screens/profile/ProfileVisitor.jsx";
+import ProfileBaiScreen from "./src/screens/ProfileBaiScreen.jsx";
 
 export default function App() {
   const Stack = createStackNavigator();
   const Tab = createBottomTabNavigator();
   return (
-    <SafeAreaProvider style={{ flex: 1, height: "auto" }}>
+    <SafeAreaView style={{ flex: 1, height: "auto" }}>
       <StatusBar hidden={false} />
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Splash">
@@ -47,10 +48,13 @@ export default function App() {
             component={MainTabs}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Notification" component={NotificationScreen} />
-          <Stack.Screen name="Profile" component={ProfileBaiScreen} options={{ headerShown: false }} />
+          {/* <Stack.Screen name="Notification" component={NotificationScreen} /> */}
+          <Stack.Screen name="Visiteur" component={ProfileVisitor} options={{ headerShown: false }} />
+          <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+          <Stack.Screen name="Bailleur" component={ProfileBaiScreen} options={{ headerShown: false }} />
+
         </Stack.Navigator>
       </NavigationContainer>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }

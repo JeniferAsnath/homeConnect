@@ -1,25 +1,27 @@
-// validation.js
+export const validateSignup = (name, phone, email, password) => {
+  const errors = {};
 
-export const validateNom = (value) => {
-  const isValid = /^[A-Za-z]{3,25}$/.test(value);
-  return isValid ? null : "Nom invalide";
-};
+  if (!name.trim()) {
+    errors.name = 'Name is required';
+  }
 
-export const validatePrenom = (value) => {
-  const isValid = /^[A-Za-z]{3,25}$/.test(value);
-  return isValid ? null : "Prénom invalide";
-};
+  if (!phone.trim()) {
+    errors.phone = 'Phone number is required';
+  } else if (!/^\d+$/.test(phone)) { // Check for digits only
+    errors.phone = 'Invalid phone number (digits only)';
+  }
 
-export const validateEmail = (value) => {
-  const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-  return isValid ? null : "Email invalide";
-};
+  if (!email.trim()) {
+    errors.email = 'Email is required';
+  } else if (!/\S+@\S+\.\S+/.test(email)) { // Check for valid email format
+    errors.email = 'Invalid email address';
+  }
 
-export const validatePassword = (value) => {
-  const isValid = /[A-Za-z\d@$!%*?&]{8,}/.test(value);
-  return isValid ? null : "Mot de passe invalide";
-};
+  if (!password.trim()) {
+    errors.password = 'Password is required';
+  } else if (password.length < 6) {
+    errors.password = 'Password must be at least 6 characters long';
+  }
 
-export const validatePhone = (value) => {
-  // Logique de validation pour le numéro de téléphone
+  return errors;
 };

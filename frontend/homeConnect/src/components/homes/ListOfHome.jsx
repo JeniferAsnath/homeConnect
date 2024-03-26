@@ -88,20 +88,20 @@ const ListOfHome = () => {
         </TouchableOpacity>
       </View>
 
-      {homes.map((item) => (
+      {homes.map((h) => (
         <View className=" bg-black/5 mb-3 rounded-xl">
           
           <HomeCard
-            key={item.id}
-            image={item.image}
-            like={item.like}
-            size={item.size}
-            icon={item.icon}
-            bed={item.bed}
-            adress={item.adress}
-            pays={item.pays}
-            nbrBed={item.nbrBed}
-            price={item.price}
+            key={h.id}
+            image={h.image}
+            like={h.like}
+            size={h.size}
+            icon={h.icon}
+            bed={h.bed}
+            adress={h.adress}
+            pays={h.pays}
+            nbrBed={h.nbrBed}
+            price={h.price}
             home={''}
           />
         </View>

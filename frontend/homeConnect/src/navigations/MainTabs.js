@@ -5,60 +5,64 @@ import Home from "../screens/HomeScreen.jsx";
 import Explore from "../screens/ExploreScreen.jsx";
 import Favorite from "../screens/FavoriteScreen.jsx";
 import Message from "../screens/MessagerieScreen.jsx";
+import AddHome from '../screens/AddHome.jsx'
 import Profile from "../screens/profile/ProfileScreen.jsx";
-import ProfileBaiScreen from '../screens/profile/ProfileBaiScreen.jsx';
+import ProfileBaiScreen from '../screens/ProfileBaiScreen.jsx';
 import ProfileVisitor from '../screens/profile/ProfileVisitor.jsx';
 import { NavigationContainer } from '@react-navigation/native';
 import { StyleSheet } from "react-native";
 import TabButton from './TabButton.js';
 
 const Tab = createBottomTabNavigator();
+
 const MainTabs = () => {
+  const userRole = "bailleur"; 
+
   const tabs = [
     {
       id: 1,
       name: "Home",
       screen: "Home",
       icon: "home-variant",
-      Component: Home
+      Component: Home,
     },
     {
       id: 2,
       name: "Explore",
       screen: "Explore",
       icon: "map-marker",
-      Component: Explore
+      Component: Explore,
     },
     {
       id: 3,
-      name: "Favorite",
+      name: userRole === "bailleur" ? "AddHome" : "Favorite",
       screen: "Favorite",
-      icon: "heart-outline",
-      Component: Favorite
+      icon: userRole === "bailleur" ? "plus" : "heart-outlin",
+      Component: userRole === "bailleur" ? AddHome : Favorite,
     },
     {
       id: 4,
       name: "Message",
       screen: "Message",
       icon: "message-text",
-      Component: Message
+      Component: Message,
     },
     {
       id: 5,
       name: "Profile",
       screen: "Profile",
       icon: "account",
-      Component: ProfileVisitor
+      Component: userRole === "bailleur" ? ProfileBaiScreen : ProfileVisitor,
     },
   ];
 
   return (
-   <>
+    <>
       <Tab.Navigator
         initialRouteName={"Home"}
-        screenOptions={{ 
+        screenOptions={{
           headerShown: false,
-          tabBarStyle : styles.tabBar
+          tabBarStyle: styles.tabBar,
         }}
       >
         {tabs.map((item) => (
@@ -68,14 +72,16 @@ const MainTabs = () => {
             component={item.Component}
             options={{
               tabBarShowLabel: false,
-              tabBarButton: (props) => <TabButton item={item} {...props} />
+              tabBarButton: (props) => <TabButton item={item} {...props} />,
             }}
           />
         ))}
       </Tab.Navigator>
-      </>
+    </>
   );
-}
+};
+
+
 
 const styles = StyleSheet.create({
   tabBar: {

@@ -1,11 +1,11 @@
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import React from "react";
-import HeaderHome from "../../components/HeaderHome";
+import HeaderHome from "../components/HeaderHome";
 import { Avatar } from "react-native-elements";
-import HeadProfile from "./HeadProfile";
+import HeadProfile from "./profile/HeadProfile";
 import Material from "react-native-vector-icons/MaterialCommunityIcons";
-import HomeCard from "../../components/homes/HomeCard";
-import casa from "../../../assets/rendu-3d-du-modele-maison.jpg";
+import HomeCard from "../components/homes/HomeCard";
+import casa from "../../assets/rendu-3d-du-modele-maison.jpg";
 
 export default function ProfileBaiScreen() {
   const homesPublish = [
@@ -61,7 +61,7 @@ export default function ProfileBaiScreen() {
   return (
     <ScrollView className="px- space-y-4 max-h-max ">
       <HeadProfile
-        image={require("../../../assets/profile-pic(3).png")}
+        image={require("../../assets/profile-pic(3).png")}
         nom={"jen wang"}
         adress={"Lubumbashi"}
         pays={"rdc"}
@@ -98,9 +98,9 @@ export default function ProfileBaiScreen() {
           flexDirection: "row",
         }}
       >
-        {homesPublish.map((i) => (
+        {homesPublish.map((index) => (
           <View className="">
-            <HomeCard key={i.id} image={i.image} profile={"flex"} />
+            <HomeCard key={index.id} image={index.image} profile={"flex"} />
           </View>
         ))}
       </View>

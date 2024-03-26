@@ -17,7 +17,7 @@ export default function LoginScreen(props) {
     };
 
     try {
-      const response = await fetch("http://192.168.242.89:8001/login", {
+      const response = await fetch("http://192.168.90.89:8001/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,24 +25,28 @@ export default function LoginScreen(props) {
         body: JSON.stringify(data),
       });
 
-      if (response.ok) {
-        // Connexion réussie
-        navigation.navigate("Main"); // Redirection vers la page d'accueil
+      const responseData = await response.json(); // Extraction des données JSON de la réponse
+
+    if (response.ok) {
+      // Vérifier si la réponse est réussie (statut HTTP 200-299)
+      if (responseData.userType === 'bailleur') {
+        navigation.navigate("Main");
         Alert.alert("Success", "Vous êtes connecté avec succès !");
       } else {
-        // Erreur de connexion
-        const errorData = await response.json();
-        Alert.alert("Error", errorData.message);
+        Alert.alert("Error", responseData.message);
       }
-    } catch (error) {
-      console.error("Erreur lors de la tentative de connexion :", error);
-      Alert.alert(
-        "Error",
-        "Une erreur s'est produite. Veuillez réessayer plus tard."
-      );
+    } else {
+      // Gérer les erreurs HTTP (par exemple, statut 404, 500, etc.)
+      Alert.alert("Error", "Une erreur s'est produite. Veuillez réessayer plus tard.");
     }
-  };
-
+  } catch (error) {
+    console.error("Erreur lors de la tentative de connexion :", error);
+    Alert.alert(
+      "Error",
+      "Une erreur s'est produite. Veuillez réessayer plus tard."
+    );
+  }
+};
   return (
     <View className="bg-white h-full w-full">
       <Header />

@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import React from "react";
-import HeaderHome from "../components/HeaderHome";
+import HeaderHome from "../components/HeaderHome.jsx";
 import Research from "../components/research/Research.jsx";
 
 export default function Explore({ nbrTrouve }) {
