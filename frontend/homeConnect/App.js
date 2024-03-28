@@ -4,7 +4,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { SafeAreaView } from "react-native-safe-area-context";
-// import { SafeAreaView } from "react-native";
 import MainTabs from "./src/navigations/MainTabs.js";
 import SplashScreen from "./src/screens/accueil/SplashScreen.jsx";
 import AccueilScreen from "./src/screens/accueil/AccueilScreen.jsx";

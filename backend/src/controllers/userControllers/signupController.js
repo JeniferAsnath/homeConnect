@@ -10,7 +10,6 @@ const signup = async (req, res) => {
   const { lastName, firstName, phoneNumber, email, password, userType } = req.body;
 
   try {
-    // Vérifier si email est défini et non vide
     if (!email) {
       return res.status(400).json({
         message: "Email is required",

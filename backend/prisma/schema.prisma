@@ -21,18 +21,18 @@ model User {
   phoneNumber   String         @unique @db.VarChar(255)
   password      String
   userType      String
-  buyers        Buyer[]
+  bailleurs     Bailleur[]
   visitors      Visitor[]
   comments      Comment[]
   evaluations   Evaluation[]
   notifications Notification[]
 }
 
-model Buyer {
+model Bailleur {
   id           Int           @id
   user         User          @relation(fields: [userId], references: [id])
   userId       Int
-  // favorites     Favorite[]
+  images       Images[]
   reservations Reservation[]
   House        House[]
 }
@@ -50,26 +50,38 @@ model Address {
   id         Int     @id @default(autoincrement())
   street     String
   city       String
-  postalCode String
   country    String
+  postalCode String
   houses     House[]
 }
 
 model House {
-  id            Int           @id @default(autoincrement())
-  title         String
-  address       Address       @relation(fields: [addressId], references: [id])
-  addressId     Int
-  numberOfRooms Int
-  price         Float
-  buyer         Buyer?        @relation(fields: [buyerId], references: [id])
-  buyerId       Int?
-  favorites     Favorite[]
-  reservations  Reservation[]
-  Visitor       Visitor?      @relation(fields: [visitorId], references: [id])
-  visitorId     Int?
-  Comment       Comment[]
-  Evaluation    Evaluation[]
+  id           Int           @id @default(autoincrement())
+  title        String
+  address      Address       @relation(fields: [addressId], references: [id])
+  addressId    Int
+  description  String
+  rent         Float
+  bedrooms     Int
+  bathrooms    Int
+  Images       Images[]
+  bailleur     Bailleur?     @relation(fields: [bailleurId], references: [id])
+  bailleurId   Int?
+  favorites    Favorite[]
+  reservations Reservation[]
+  Visitor      Visitor?      @relation(fields: [visitorId], references: [id])
+  visitorId    Int?
+  Comment      Comment[]
+  Evaluation   Evaluation[]
+}
+
+model Images {
+  id         Int       @id @default(autoincrement())
+  url        String
+  house      House     @relation(fields: [houseId], references: [id])
+  houseId    Int
+  Bailleur   Bailleur? @relation(fields: [bailleurId], references: [id])
+  bailleurId Int?
 }
 
 model Favorite {
@@ -81,14 +93,14 @@ model Favorite {
 }
 
 model Reservation {
-  id        Int      @id @default(autoincrement())
-  visitDate DateTime
-  visitor   Visitor  @relation(fields: [visitorId], references: [id])
-  visitorId Int
-  house     House    @relation(fields: [houseId], references: [id])
-  houseId   Int
-  Buyer     Buyer?   @relation(fields: [buyerId], references: [id])
-  buyerId   Int?
+  id         Int       @id @default(autoincrement())
+  visitDate  DateTime
+  visitor    Visitor   @relation(fields: [visitorId], references: [id])
+  visitorId  Int
+  house      House     @relation(fields: [houseId], references: [id])
+  houseId    Int
+  Bailleur   Bailleur? @relation(fields: [bailleurId], references: [id])
+  bailleurId Int?
 }
 
 model Comment {

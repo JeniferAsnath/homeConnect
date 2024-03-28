@@ -12,6 +12,9 @@ module.exports = {
         'gris': '#f5f8fa',
         'beige': '#EFE8C7',
       },
+      gradientColorStopPositions: {
+        33: '33%',
+      }
     },
   },
   plugins: [],

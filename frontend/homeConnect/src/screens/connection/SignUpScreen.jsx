@@ -207,7 +207,7 @@ export default function SignUpScreen() {
           onPress={handleSignUp}
           className="w-full   bg-regal-blue p-2 shadow-inherit shadow-2xl rounded-full"
         >
-          <Text className="text-lg font-bold text-white text-white text-center ">
+          <Text className="text-lg font-bold text-white text-center ">
             Enregistrer
           </Text>
         </TouchableOpacity>
@@ -231,7 +231,7 @@ export default function SignUpScreen() {
               onPress={() => handleUserTypeSelection("visiteur")}
               className="  bg-regal-blue p-2 shadow-inherit shadow-2xl rounded-full"
             >
-              <Text className="text-lg font-bold text-white text-white text-center ">
+              <Text className="text-lg font-bold text-white  text-center ">
                 Visiteur
               </Text>
             </TouchableOpacity>
@@ -239,7 +239,7 @@ export default function SignUpScreen() {
               onPress={() => handleUserTypeSelection("bailleur")}
               className="  bg-regal-blue p-2 shadow-inherit shadow-2xl rounded-full"
             >
-              <Text className="text-lg font-bold text-white text-white text-center ">
+              <Text className="text-lg font-bold text-white  text-center ">
                 Bailleur
               </Text>
             </TouchableOpacity>
