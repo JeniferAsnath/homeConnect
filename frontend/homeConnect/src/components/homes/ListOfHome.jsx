@@ -89,10 +89,10 @@ const ListOfHome = () => {
       </View>
 
       {homes.map((h) => (
-        <View className=" bg-black/5 mb-3 rounded-xl">
+        <View key={h.id} className=" bg-black/5 mb-3 rounded-xl">
           
           <HomeCard
-            key={h.id}
+            
             image={h.image}
             like={h.like}
             size={h.size}

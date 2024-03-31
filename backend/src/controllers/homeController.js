@@ -10,26 +10,41 @@ const upload = multer({ storage });
 
 const { createAddress } = require("./addressController");
 const { createImage } = require("./imageController");
+const jwt = require("jsonwebtoken");
 
 async function addHome(req, res) {
   upload.array("images", 10)(req, res, async (err) => {
     try {
       if (err) {
-        return res.status(500).json({ error: "Erreur inattendue lors du téléchargement des fichiers" });
+        return res
+          .status(500)
+          .json({
+            error: "Erreur inattendue lors du téléchargement des fichiers",
+          });
       }
 
-      const { title, description, bedrooms, bathrooms, rent, bailleurId, visitorId } = req.body;
-      const { street, city, country, postalCode } = req.body.address;
-
+      const {
+        title,
+        description,
+        bedrooms,
+        bathrooms,
+        rent,
+        // bailleurId,
+        // visitorId,
+        addressId,
+      } = req.body;
+      
       let images = [];
       if (req.files && req.files.length > 0) {
         images = req.files.map((file) => file.path);
       }
 
-      // Créer l'adresse
-      const newAddress = await createAddress(req, res);
+      // get user info
+      if (req.headers.authorization) {
+        console.log(req.headers.authorization);
+        const user = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
+      }
 
-      // Créer la maison avec l'adresse associée
       const newHome = await prisma.house.create({
         data: {
           title,
@@ -38,9 +53,8 @@ async function addHome(req, res) {
           bedrooms: parseInt(bedrooms),
           bathrooms: parseInt(bathrooms),
           address: {
-            connect: { id: newAddress.id }
+            connect: { id: addressId },
           },
-          
         },
       });
 
@@ -51,7 +65,13 @@ async function addHome(req, res) {
         createdImages.push(newImage);
       }
 
-      res.status(201).json({ message: "Maison ajoutée avec succès", newHome, createdImages });
+      res
+        .status(201)
+        .json({
+          message: "Maison ajoutée avec succès",
+          newHome,
+          createdImages,
+        });
     } catch (error) {
       console.error("Erreur lors de l'ajout de la maison :", error);
       res.status(500).json({ error: "Erreur lors de l'ajout de la maison" });
@@ -60,7 +80,6 @@ async function addHome(req, res) {
 }
 
 module.exports = { addHome };
-
 
 async function getAllHomes(req, res) {
   try {

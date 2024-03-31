@@ -3,11 +3,13 @@ const prisma = new PrismaClient();
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await prisma.user.findMany();
-    res.status(200).json(users);
+    const users = await prisma.user.findMany({
+      include: { bailleur: true, visitor: true } // Inclut les bailleurs et les visiteurs associés dans la réponse
+    });
+    res.json(users);
   } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ error: 'Error fetching users' });
+    console.error('Erreur lors de la récupération des utilisateurs :', error);
+    res.status(500).send('Erreur lors de la récupération des utilisateurs.');
   }
 };
 

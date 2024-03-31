@@ -1,13 +1,14 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { createUser } = require('../../models/userModels/userModel.js');
-const { PrismaClient } = require('@prisma/client');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { createUser } = require("../../models/userModels/userModel.js");
+const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 const saltRounds = 10;
 
 const signup = async (req, res) => {
-  const { lastName, firstName, phoneNumber, email, password, userType } = req.body;
+  const { lastName, firstName, phoneNumber, email, password, userType } =
+    req.body;
 
   try {
     if (!email) {
@@ -19,7 +20,7 @@ const signup = async (req, res) => {
     const findUser = await prisma.user.findUnique({
       where: {
         email: email,
-      }
+      },
     });
 
     if (findUser) {
@@ -42,20 +43,35 @@ const signup = async (req, res) => {
       },
     });
 
+
+    // Mettre à jour l'utilisateur pour l'associer au bailleur ou au visiteur nouvellement créé
+    // await prisma.user.update({
+    //   where: { id: newUser.id },
+    //   data: {
+    //     bailleurs: userType === "bailleur" ? { connect: { id: role.id } } : undefined,
+    //     visiteurs: userType === "visiteur" ? { connect: { id: role.id } } : undefined,
+    //   },
+    // });
     const token = generateJWT(newUser.id, newUser.userType);
-    res.status(201).json({ message: 'Utilisateur enregistré avec succès', token });
+    res
+      .status(201)
+      .json({ message: "Utilisateur enregistré avec succès", token, newUser });
   } catch (error) {
     console.log(error);
-    console.error('Erreur lors de la création de l\'utilisateur :', error);
-    res.status(500).json({ error: 'Erreur lors de la création de l\'utilisateur' });
+    console.error("Erreur lors de la création de l'utilisateur :", error);
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la création de l'utilisateur" });
   }
 };
 
 const generateJWT = (userId, userType) => {
   if (!process.env.JWT_SECRET) {
-    throw new Error('JWT_SECRET is not defined');
+    throw new Error("JWT_SECRET is not defined");
   }
-  const token = jwt.sign({ userId, userType }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ userId, userType }, process.env.JWT_SECRET, {
+    expiresIn: "365d",
+  });
   return token;
 };
 

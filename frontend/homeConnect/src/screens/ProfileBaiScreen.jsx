@@ -6,6 +6,7 @@ import HeadProfile from "./profile/HeadProfile";
 import Material from "react-native-vector-icons/MaterialCommunityIcons";
 import HomeCard from "../components/homes/HomeCard";
 import casa from "../../assets/rendu-3d-du-modele-maison.jpg";
+import LogoutScreen from "./connection/Logout";
 
 export default function ProfileBaiScreen() {
   const homesPublish = [
@@ -71,6 +72,7 @@ export default function ProfileBaiScreen() {
         action={"Follow"}
         bailleur={"fel"}
       />
+      <LogoutScreen/>
       <View className=" items-center">
         <TouchableOpacity className="w-80 p-2 rounded-2xl bg-regal-blue">
           <Text className=" text-white text-center "> Edit profile</Text>
@@ -99,8 +101,8 @@ export default function ProfileBaiScreen() {
         }}
       >
         {homesPublish.map((index) => (
-          <View className="">
-            <HomeCard key={index.id} image={index.image} profile={"flex"} />
+          <View key={index.id} className="">
+            <HomeCard  image={index.image} profile={"flex"} />
           </View>
         ))}
       </View>

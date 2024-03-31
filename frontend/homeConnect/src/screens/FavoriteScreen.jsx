@@ -90,9 +90,9 @@ export default function Favorite() {
       </View>
       <ScrollView>
         {homes.map((f) => (
-          <View className=" bg-black/5 rounded-xl m-4">
+          <View key={f.id} className=" bg-black/5 rounded-xl m-4">
             <HomeCard
-              key={f.id}
+              
               image={f.image}
               like={f.like}
               size={f.size}

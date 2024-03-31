@@ -1,10 +1,11 @@
-import { View, Text, TextInput,Alert } from "react-native";
+import { View, Text, TextInput, Alert } from "react-native";
 import React, { useState, useRef } from "react";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../../components/StyleLogin";
+import axios from 'axios';
 
-export default function LoginScreen(props) {
+export default function LoginScreen({ updateUserRole }) {
   const navigation = useNavigation();
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -17,36 +18,37 @@ export default function LoginScreen(props) {
     };
 
     try {
-      const response = await fetch("http://192.168.90.89:8001/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await axios.post(
+        "http://192.168.34.89:8001/login",
+        data
+      );
 
-      const responseData = await response.json(); // Extraction des données JSON de la réponse
-
-    if (response.ok) {
-      // Vérifier si la réponse est réussie (statut HTTP 200-299)
-      if (responseData.userType === 'bailleur') {
-        navigation.navigate("Main");
-        Alert.alert("Success", "Vous êtes connecté avec succès !");
+      if (response.status === 200) {
+        const responseData = response.data;
+        if (
+          responseData.userType === "bailleur" ||
+          responseData.userType === "visitor"
+        ) {
+          updateUserRole(responseData.userType); 
+          navigation.navigate("Main");
+          Alert.alert("Success", "Vous êtes connecté avec succès !");
+        } else {
+          Alert.alert("Error", responseData.message);
+        }
       } else {
-        Alert.alert("Error", responseData.message);
+        Alert.alert(
+          "Error",
+          "Une erreur s'est produite. Veuillez réessayer plus tard."
+        );
       }
-    } else {
-      // Gérer les erreurs HTTP (par exemple, statut 404, 500, etc.)
-      Alert.alert("Error", "Une erreur s'est produite. Veuillez réessayer plus tard.");
+    } catch (error) {
+      console.error("Erreur lors de la tentative de connexion :", error);
+      Alert.alert(
+        "Error",
+        "Une erreur s'est produite. Veuillez réessayer plus tard."
+      );
     }
-  } catch (error) {
-    console.error("Erreur lors de la tentative de connexion :", error);
-    Alert.alert(
-      "Error",
-      "Une erreur s'est produite. Veuillez réessayer plus tard."
-    );
-  }
-};
+  };
   return (
     <View className="bg-white h-full w-full">
       <Header />
@@ -55,11 +57,11 @@ export default function LoginScreen(props) {
         Login
       </Text>
       <TouchableOpacity
-        className="pl-5 text-regal-blue  "      
+        className="pl-5 text-regal-blue  "
         onPress={() => setIsEmailLogin(!isEmailLogin)}
         style={{ marginTop: 20 }}
       >
-        <Text className=" text-regal-blue  " >
+        <Text className=" text-regal-blue  ">
           Se connecter avec {isEmailLogin ? "Numéro de téléphone" : "Email"}
         </Text>
       </TouchableOpacity>
@@ -93,7 +95,7 @@ export default function LoginScreen(props) {
           onPress={handleLogin}
           className="w-full mb-2  bg-regal-blue p-1 shadow-inherit shadow-2xl rounded-full"
         >
-          <Text className="text-lg font-bold text-white text-white text-center ">
+          <Text className="text-lg font-bold text-white text-center ">
             Connexion
           </Text>
         </TouchableOpacity>

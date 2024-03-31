@@ -112,9 +112,9 @@ export default function ProfileVisitor() {
             <View className="w-1/2">
               <Text className="text-base-color font-bold">26 mars 2024</Text>
             </View>
-            <View >
+            <View key={r.id}>
               <HomeCard
-                key={r.id}
+                
                 image={r.image}
                 favorite={"flex"}
                 like={r.like}

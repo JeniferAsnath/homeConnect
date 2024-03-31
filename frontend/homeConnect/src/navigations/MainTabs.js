@@ -5,7 +5,7 @@ import Home from "../screens/HomeScreen.jsx";
 import Explore from "../screens/ExploreScreen.jsx";
 import Favorite from "../screens/FavoriteScreen.jsx";
 import Message from "../screens/MessagerieScreen.jsx";
-import AddHome from '../screens/AddHome.jsx'
+import AddHome from '../screens/home/AddHome.jsx'
 import Profile from "../screens/profile/ProfileScreen.jsx";
 import ProfileBaiScreen from '../screens/ProfileBaiScreen.jsx';
 import ProfileVisitor from '../screens/profile/ProfileVisitor.jsx';
@@ -15,8 +15,8 @@ import TabButton from './TabButton.js';
 
 const Tab = createBottomTabNavigator();
 
-const MainTabs = () => {
-  const userRole = "bailleur"; 
+const MainTabs = ( {userRole}) => {
+  // const userRole = "bailleur"; 
 
   const tabs = [
     {
@@ -37,7 +37,7 @@ const MainTabs = () => {
       id: 3,
       name: userRole === "bailleur" ? "AddHome" : "Favorite",
       screen: "Favorite",
-      icon: userRole === "bailleur" ? "plus" : "heart-outlin",
+      icon: userRole === "bailleur" ? "plus" : "heart-outline",
       Component: userRole === "bailleur" ? AddHome : Favorite,
     },
     {

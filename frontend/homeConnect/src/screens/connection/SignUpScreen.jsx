@@ -32,52 +32,53 @@ export default function SignUpScreen() {
   const [visible, setVisible] = useState(false);
   const phoneInput = useRef(null);
 
-  
-
-  
   const validateNom = (value) => {
-    const isValid = /^[A-Za-z]{3,25}$/.test(value);
+    const isValid = /^[A-Za-z]{3,25}$/.test(value); // Validate 3-25 letters only
     setIsValidNom(isValid && value !== "");
     setNom(value);
     if (!isValid && value !== "") setErrorText("Nom invalide.");
   };
 
   const validatePrenom = (value) => {
-    const isValid = /^[A-Za-z]{3,25}$/.test(value);
+    const isValid = /^[A-Za-z]{3,25}$/.test(value); // Validate 3-25 letters only
     setIsValidPrenom(isValid && value !== "");
     setPrenom(value);
     if (!isValid && value !== "") setErrorText("Prénom invalide.");
   };
 
   const validateEmail = (value) => {
-    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value); // Validate email format
     setIsValidEmail(isValid && value !== "");
     setEmail(value);
     if (!isValid && value !== "") setErrorText("Email invalide.");
   };
 
   const validatePassword = (value) => {
-    const isValid = /[A-Za-z\d@$!%*?&]{8,}/.test(value);
+    const isValid = /[A-Za-z\d@$!%*?&]{8,}/.test(value); // Validate at least 8 characters
     setIsValidPassword(isValid && value !== "");
     setPassword(value);
     if (!isValid && value !== "") setErrorText("Mot de passe invalide.");
   };
 
- 
-
   const validatePhone = () => {
-    return true;
+    const isValid = phoneInput.current?.isValidNumber();
+    setIsValidPhone(isValid);
+    if (!isValid) setErrorText("Numéro de téléphone invalide.");
+    return isValid;
   };
+
   const handleUserTypeSelection = async (type) => {
     setUserType(type);
     setVisible(false);
     await signUpUser();
   };
+
   const handlePhoneInputChange = (value) => {
     setPhoneNumber(value);
   };
+
   const handleSignUp = async () => {
-    if (!validationAll() == false ) {
+    if (validationAll() == false) {
       Alert.alert("Erreur", "Veuillez remplir tous les champs correctement.", [
         { text: "OK", onPress: () => console.log("OK Pressed") },
       ]);
@@ -85,6 +86,9 @@ export default function SignUpScreen() {
     }
 
     setVisible(true);
+    const formattedPhoneNumber = phoneInput.current?.getNumber(); // Get formatted phone number
+    setPhoneNumber(formattedPhoneNumber);
+    await signUpUser();
   };
 
   const validationAll = () => {
@@ -98,16 +102,19 @@ export default function SignUpScreen() {
   };
 
   const signUpUser = async () => {
-    if (userType == null) {
+    if (userType) {
+      Alert.alert("bravo", "type utilisateur choisis avec succès.", [
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ]);
+    } else {
       Alert.alert("Erreur", "Veuillez sélectionner un type d'utilisateur.", [
         { text: "OK", onPress: () => console.log("OK Pressed") },
       ]);
-      return;
+      // return;
     }
 
     try {
-      // const phoneNumber = phoneInput.current?.getValue();
-      const userData = await axios.post("http://192.168.242.89:8001/signup", {
+      const userData = await axios.post("http://192.168.90.89:8001/signup", {
         lastName: nom,
         firstName: prenom,
         phoneNumber: phoneNumber,
@@ -115,21 +122,28 @@ export default function SignUpScreen() {
         password,
         userType,
       });
-      // await sendSignUpData(userData);
 
       Alert.alert("Félicitation", "Enregistrement réussi !", [
         { text: "OK", onPress: () => navigation.navigate("Login") },
       ]);
     } catch (error) {
-      console.log(JSON.parse(JSON.stringify(error)));
       console.error("Erreur lors de l'inscription :", error);
-      Alert.alert(
-        "Erreur",
-        "Une erreur s'est produite lors de l'inscription. Veuillez réessayer plus tard.",
-        [{ text: "OK", onPress: () => console.log("OK Pressed") }]
-      );
-      // console.log("phoneInput:", phoneInput);
-      // console.log("phoneInput.current:", phoneInput);
+
+      let errorMessage =
+        "Une erreur s'est produite lors de l'inscription. Veuillez réessayer plus tard.";
+      if (error.response) {
+        // Extract error message from server response (if available)
+        const errorData = error.response.data;
+        if (errorData && errorData.message) {
+          errorMessage = errorData.message;
+        }
+      }
+
+      Alert.alert("Erreur", errorMessage, [
+        { text: "OK", onPress: () => console.log("OK Pressed") },
+      ]);
+    } finally {
+      setVisible(false); // Hide user type selection modal after signup attempt
     }
   };
 
@@ -219,19 +233,19 @@ export default function SignUpScreen() {
         onRequestClose={() => setVisible(false)}
       >
         <View
-          className="flex-1 justify-center self-end items-end  "
+          className="flex-1 justify-center  items-center "
           // style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <View
-            className="flex justify-center  bg-white rounded-xl"
+            className="flex justify-center  bg-white rounded-xl space-y-4  "
             style={{ backgroundColor: "white", padding: 20, borderRadius: 10 }}
           >
             <Text>Choisissez votre type d'utilisateur :</Text>
             <TouchableOpacity
-              onPress={() => handleUserTypeSelection("visiteur")}
+              onPress={() => handleUserTypeSelection("visitor")}
               className="  bg-regal-blue p-2 shadow-inherit shadow-2xl rounded-full"
             >
-              <Text className="text-lg font-bold text-white  text-center ">
+              <Text className="text-lg font-bold text-white text-center ">
                 Visiteur
               </Text>
             </TouchableOpacity>
@@ -239,7 +253,7 @@ export default function SignUpScreen() {
               onPress={() => handleUserTypeSelection("bailleur")}
               className="  bg-regal-blue p-2 shadow-inherit shadow-2xl rounded-full"
             >
-              <Text className="text-lg font-bold text-white  text-center ">
+              <Text className="text-lg font-bold  text-white text-center ">
                 Bailleur
               </Text>
             </TouchableOpacity>

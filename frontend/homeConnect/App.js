@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -13,10 +13,18 @@ import NotificationScreen from "./src/screens/Notifications.jsx";
 import Profile from "./src/screens/profile/ProfileScreen.jsx";
 import ProfileVisitor from "./src/screens/profile/ProfileVisitor.jsx";
 import ProfileBaiScreen from "./src/screens/ProfileBaiScreen.jsx";
+import LogoutScreen from "./src/screens/connection/Logout.jsx";
+import AddImage from "./src/screens/home/AddImage.jsx";
 
 export default function App() {
   const Stack = createStackNavigator();
   const Tab = createBottomTabNavigator();
+  const [userRole, setUserRole] = useState(null);
+
+  const updateUserRole = (role) => {
+    setUserRole(role);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, height: "auto" }}>
       <StatusBar hidden={false} />
@@ -32,26 +40,38 @@ export default function App() {
             component={AccueilScreen}
             options={{ headerShown: false }}
           />
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="Login"  options={{ headerShown: false }}>
+            {() => <LoginScreen updateUserRole={updateUserRole} />}
+          </Stack.Screen>
+
           <Stack.Screen
             name="Signup"
             component={SignupScreen}
             options={{ headerShown: false }}
           />
+          <Stack.Screen name="Main"  options={{ headerShown: false }}>
+            {() => <MainTabs userRole={userRole} />}
+          </Stack.Screen>
           <Stack.Screen
-            name="Main"
-            component={MainTabs}
+            name="Visiteur"
+            component={ProfileVisitor}
             options={{ headerShown: false }}
           />
-          {/* <Stack.Screen name="Notification" component={NotificationScreen} /> */}
-          <Stack.Screen name="Visiteur" component={ProfileVisitor} options={{ headerShown: false }} />
-          <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-          <Stack.Screen name="Bailleur" component={ProfileBaiScreen} options={{ headerShown: false }} />
-
+          <Stack.Screen
+            name="Profile"
+            component={Profile}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Bailleur"
+            component={ProfileBaiScreen}
+            options={{ headerShown: false }}
+          />
+           <Stack.Screen
+            name="Addimage"
+            component={AddImage}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

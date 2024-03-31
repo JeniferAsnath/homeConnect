@@ -13,6 +13,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+
 model User {
   id            Int            @id @default(autoincrement())
   firstName     String         @db.VarChar(255)
@@ -132,4 +134,9 @@ model Notification {
   status  String
   user    User     @relation(fields: [userId], references: [id])
   userId  Int
+}
+model BlacklistedToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now())
 }
