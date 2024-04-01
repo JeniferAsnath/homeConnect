@@ -1,59 +1,82 @@
 const bcrypt = require("bcrypt");
-const { findUserByIdentity } = require("../../models/userModels/userModel.js");
-const { generateJWT } = require("../../validators/loginAuth.js");
-const { verifyToken } = require('../../middleware/authMiddleware.js');
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
+const { findUserByIdentity, findUserById } = require("../../models/userModels/userModel.js");
 const secretKey = process.env.JWT_SECRET;
 
+const HTTP_STATUS = {
+  OK: 200,
+  BAD_REQUEST: 400,
+  NOT_FOUND: 404,
+  FORBIDDEN: 403,
+  INTERNAL_SERVER_ERROR: 500,
+};
+
+const ERROR_MESSAGES = {
+  MISSING_FIELDS: "Identity and password are required fields.",
+  USER_NOT_FOUND: "User not found.",
+  INVALID_PASSWORD: "Invalid password.",
+  SERVER_ERROR: "Internal Server Error",
+};
 
 const login = async (req, res) => {
   const { identity, password } = req.body;
 
   if (!identity || !password) {
     return res
-      .status(400)
-      .json({ message: "Identity and password are required fields." });
+      .status(HTTP_STATUS.BAD_REQUEST)
+      .json({ message: ERROR_MESSAGES.MISSING_FIELDS });
   }
 
   try {
     let user = await findUserByIdentity(identity);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found." });
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
-      return res.status(403).json({ message: "Invalid password." });
+      return res.status(HTTP_STATUS.FORBIDDEN).json({ message: ERROR_MESSAGES.INVALID_PASSWORD });
     }
 
+    const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: "365d" });
+    res.status(HTTP_STATUS.OK).json({ role: user.role, token });
 
-    const token = jwt.sign({ id: user.id, username: user.username }, secretKey, { expiresIn: '365d' }); 
-    req.session.userId = user.id;   
-    res.status(200).json({ userType: user.userType, token });
   } catch (error) {
     console.error("Error logging in:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
   }
 };
+
 const profile = async (req, res) => {
+  const token = req.headers.authorization;
+
   try {
-    const userId = req.session.userId;
-    if (!userId) {
-      return res.status(401).send('Session invalide.');
+    if (!token) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Token is missing." });
     }
-    
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
-    });
+
+    // Extrait le token de l'en-tête
+    const tokenParts = token.split(" ");
+    const tokenValue = tokenParts[1]; // Supposant que le token est au format "Bearer <token>"
+
+    // Vérification du token
+    const decodedToken = jwt.verify(tokenValue, secretKey);
+    const userId = decodedToken.userId;
+
+    // Récupération des informations de l'utilisateur à partir de l'ID
+    const user = await findUserById(userId);
+
     if (!user) {
-      return res.status(404).send('Utilisateur non trouvé.');
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
     }
-    res.send(`Bienvenue sur votre profil, ${user.username}!`);
+
+    res.status(HTTP_STATUS.OK).send(`Welcome to your profile, ${user.username}!`);
+
   } catch (error) {
-    console.error('Erreur lors de la récupération des informations utilisateur :', error);
-    res.status(500).send('Erreur lors de la récupération des informations utilisateur.');
+    console.error("Error retrieving user information:", error);
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
   }
 };
 

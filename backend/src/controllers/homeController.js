@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const jwt = require("jsonwebtoken");
 
 const multer = require("multer");
 const storage = multer.diskStorage({
@@ -8,75 +9,93 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-const { createAddress } = require("./addressController");
-const { createImage } = require("./imageController");
-const jwt = require("jsonwebtoken");
+function getUserIdFromToken(req) {
+  // Récupérer le jeton JWT à partir des en-têtes de la requête
+  const authorizationHeader = req.user;
+  if (!authorizationHeader) {
+    throw new Error("Authorization header is missing");
+  }
+  const token = authorizationHeader.split(" ")[1];
+  // Décoder le jeton pour obtenir les informations de l'utilisateur
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  // Récupérer l'ID de l'utilisateur à partir des informations décodées
+  const userId = decodedToken.userId;
+  return userId;
+}
 
 async function addHome(req, res) {
   upload.array("images", 10)(req, res, async (err) => {
     try {
       if (err) {
-        return res
-          .status(500)
-          .json({
-            error: "Erreur inattendue lors du téléchargement des fichiers",
-          });
+        return res.status(500).json({
+          error: "Erreur inattendue lors du téléchargement des fichiers",
+        });
       }
 
-      const {
-        title,
-        description,
-        bedrooms,
-        bathrooms,
-        rent,
-        // bailleurId,
-        // visitorId,
-        addressId,
-      } = req.body;
+      const { title, description, bedrooms, bathrooms, rent, addressId } =
+        req.body;
       
+      const userId = getUserIdFromToken(req);
       let images = [];
       if (req.files && req.files.length > 0) {
         images = req.files.map((file) => file.path);
       }
 
-      // get user info
-      if (req.headers.authorization) {
-        console.log(req.headers.authorization);
-        const user = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
-      }
+      const newHome = await createHome(
+        title,
+        description,
+        bedrooms,
+        bathrooms,
+        rent,
+        addressId,
+        userId
+      );
 
-      const newHome = await prisma.house.create({
-        data: {
-          title,
-          rent: parseFloat(rent),
-          description,
-          bedrooms: parseInt(bedrooms),
-          bathrooms: parseInt(bathrooms),
-          address: {
-            connect: { id: addressId },
-          },
-        },
+      const createdImages = await createImages(newHome.id, images);
+
+      res.status(201).json({
+        message: "Maison ajoutée avec succès",
+        newHome,
+        createdImages,
       });
-
-      // Créer les images associées à la maison
-      const createdImages = [];
-      for (const imagePath of images) {
-        const newImage = await createImage(imagePath, newHome.id);
-        createdImages.push(newImage);
-      }
-
-      res
-        .status(201)
-        .json({
-          message: "Maison ajoutée avec succès",
-          newHome,
-          createdImages,
-        });
     } catch (error) {
       console.error("Erreur lors de l'ajout de la maison :", error);
       res.status(500).json({ error: "Erreur lors de l'ajout de la maison" });
     }
   });
+}
+
+async function createHome(title, description, bedrooms, bathrooms, rent, addressId, userId) {
+  const newHome = await prisma.house.create({
+    data: {
+      title,
+      rent: parseFloat(rent),
+      description,
+      bedrooms: parseInt(bedrooms),
+      bathrooms: parseInt(bathrooms),
+      address: {
+        connect: { id: addressId },
+      },
+      bailleur: { connect: { id: userId } } // Ajout de l'utilisateur en tant que bailleur de la maison
+    },
+  });
+  return newHome;
+}
+
+async function createImages(homeId, images) {
+  const createdImages = [];
+  for (const imagePath of images) {
+    const newImage = await prisma.images.create({
+      data: {
+        url: imagePath,
+        house: {
+          connect: { id: homeId },
+        },
+      },
+    });
+    createdImages.push(newImage);
+  }
+  return createdImages;
 }
 
 module.exports = { addHome };

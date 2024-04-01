@@ -28,57 +28,34 @@ export default function SignUpScreen() {
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [isValidPhone, setIsValidPhone] = useState(true);
   const [errorText, setErrorText] = useState("");
-  const [userType, setUserType] = useState(null);
+  const [role, setRole] = useState(null);
   const [visible, setVisible] = useState(false);
   const phoneInput = useRef(null);
-
-  const validateNom = (value) => {
-    const isValid = /^[A-Za-z]{3,25}$/.test(value); // Validate 3-25 letters only
-    setIsValidNom(isValid && value !== "");
-    setNom(value);
-    if (!isValid && value !== "") setErrorText("Nom invalide.");
-  };
-
-  const validatePrenom = (value) => {
-    const isValid = /^[A-Za-z]{3,25}$/.test(value); // Validate 3-25 letters only
-    setIsValidPrenom(isValid && value !== "");
-    setPrenom(value);
-    if (!isValid && value !== "") setErrorText("Prénom invalide.");
-  };
-
-  const validateEmail = (value) => {
-    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value); // Validate email format
-    setIsValidEmail(isValid && value !== "");
-    setEmail(value);
-    if (!isValid && value !== "") setErrorText("Email invalide.");
-  };
-
-  const validatePassword = (value) => {
-    const isValid = /[A-Za-z\d@$!%*?&]{8,}/.test(value); // Validate at least 8 characters
-    setIsValidPassword(isValid && value !== "");
-    setPassword(value);
-    if (!isValid && value !== "") setErrorText("Mot de passe invalide.");
-  };
-
-  const validatePhone = () => {
-    const isValid = phoneInput.current?.isValidNumber();
-    setIsValidPhone(isValid);
-    if (!isValid) setErrorText("Numéro de téléphone invalide.");
-    return isValid;
-  };
-
-  const handleUserTypeSelection = async (type) => {
-    setUserType(type);
-    setVisible(false);
-    await signUpUser();
-  };
 
   const handlePhoneInputChange = (value) => {
     setPhoneNumber(value);
   };
 
+  const validateFields = () => {
+    const isValidNom = /^[A-Za-z\s]{3,25}$/.test(nom);
+    const isValidPrenom = /^[A-Za-z\s]{3,25}$/.test(prenom);
+    const isValidPhone = phoneNumber.trim() !== "";
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const isValidPassword = /[A-Za-z\d@$!%*?&]{8,}/.test(password);
+
+    setIsValidNom(isValidNom);
+    setIsValidPrenom(isValidPrenom);
+    setIsValidPhone(isValidPhone);
+    setIsValidEmail(isValidEmail);
+    setIsValidPassword(isValidPassword);
+
+    return isValidNom && isValidPrenom && isValidPhone && isValidEmail && isValidPassword;
+  };
+
   const handleSignUp = async () => {
-    if (validationAll() == false) {
+    const isValid = validateFields();
+
+    if (!isValid) {
       Alert.alert("Erreur", "Veuillez remplir tous les champs correctement.", [
         { text: "OK", onPress: () => console.log("OK Pressed") },
       ]);
@@ -86,41 +63,29 @@ export default function SignUpScreen() {
     }
 
     setVisible(true);
-    const formattedPhoneNumber = phoneInput.current?.getNumber(); // Get formatted phone number
-    setPhoneNumber(formattedPhoneNumber);
+  };
+
+  const handleRoleSelection = async (type) => {
+    setRole(type);
+    setVisible(false);
     await signUpUser();
   };
 
-  const validationAll = () => {
-    const returns =
-      validateNom(nom) &&
-      validatePrenom(prenom) &&
-      validatePhone(phoneNumber) &&
-      validateEmail(email) &&
-      validatePassword(password);
-    return returns;
-  };
-
   const signUpUser = async () => {
-    if (userType) {
+    
       Alert.alert("bravo", "type utilisateur choisis avec succès.", [
         { text: "OK", onPress: () => console.log("OK Pressed") },
       ]);
-    } else {
-      Alert.alert("Erreur", "Veuillez sélectionner un type d'utilisateur.", [
-        { text: "OK", onPress: () => console.log("OK Pressed") },
-      ]);
-      // return;
-    }
+
 
     try {
-      const userData = await axios.post("http://192.168.90.89:8001/signup", {
+      const userData = await axios.post("http://192.168.34.89:8001/signup", {
         lastName: nom,
         firstName: prenom,
         phoneNumber: phoneNumber,
         email,
         password,
-        userType,
+        role,
       });
 
       Alert.alert("Félicitation", "Enregistrement réussi !", [
@@ -160,7 +125,10 @@ export default function SignUpScreen() {
             placeholder="Nom"
             placeholderTextColor={"gray"}
             value={nom}
-            onChangeText={validateNom}
+            onChangeText={(value) => {
+              setNom(value);
+            }}
+            onBlur={validateFields}
           />
         </View>
         {!isValidNom && <Text style={{ color: "red" }}>Nom invalide</Text>}
@@ -169,7 +137,10 @@ export default function SignUpScreen() {
             placeholder="Prénom"
             placeholderTextColor={"gray"}
             value={prenom}
-            onChangeText={validatePrenom}
+            onChangeText={(value) => {
+              setPrenom(value);
+            }}
+            onBlur={validateFields}
           />
         </View>
         {!isValidPrenom && (
@@ -200,7 +171,10 @@ export default function SignUpScreen() {
             placeholder="Email"
             placeholderTextColor={"gray"}
             value={email}
-            onChangeText={validateEmail}
+            onChangeText={(value) => {
+              setEmail(value);
+            }}
+            onBlur={validateFields}
           />
         </View>
         {!isValidEmail && <Text style={{ color: "red" }}>Email invalide</Text>}
@@ -210,7 +184,10 @@ export default function SignUpScreen() {
             placeholderTextColor={"gray"}
             secureTextEntry={true}
             value={password}
-            onChangeText={validatePassword}
+            onChangeText={(value) => {
+              setPassword(value);
+            }}
+            onBlur={validateFields}
           />
         </View>
         {!isValidPassword && (
@@ -234,7 +211,6 @@ export default function SignUpScreen() {
       >
         <View
           className="flex-1 justify-center  items-center "
-          // style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <View
             className="flex justify-center  bg-white rounded-xl space-y-4  "
@@ -242,7 +218,7 @@ export default function SignUpScreen() {
           >
             <Text>Choisissez votre type d'utilisateur :</Text>
             <TouchableOpacity
-              onPress={() => handleUserTypeSelection("visitor")}
+              onPress={() => handleRoleSelection("visitor")}
               className="  bg-regal-blue p-2 shadow-inherit shadow-2xl rounded-full"
             >
               <Text className="text-lg font-bold text-white text-center ">
@@ -250,7 +226,7 @@ export default function SignUpScreen() {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => handleUserTypeSelection("bailleur")}
+              onPress={() => handleRoleSelection("bailleur")}
               className="  bg-regal-blue p-2 shadow-inherit shadow-2xl rounded-full"
             >
               <Text className="text-lg font-bold  text-white text-center ">

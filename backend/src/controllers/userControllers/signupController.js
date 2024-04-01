@@ -1,78 +1,84 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { createUser } = require("../../models/userModels/userModel.js");
 const { PrismaClient } = require("@prisma/client");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const Joi = require("joi");
 
 const prisma = new PrismaClient();
-const saltRounds = 10;
+
+const signupSchema = Joi.object({
+  lastName: Joi.string().required(),
+  firstName: Joi.string().required(),
+  phoneNumber: Joi.string().required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().required(),
+  role: Joi.string().valid("bailleur", "visiteur").required(),
+});
 
 const signup = async (req, res) => {
-  const { lastName, firstName, phoneNumber, email, password, userType } =
-    req.body;
-
   try {
-    if (!email) {
-      return res.status(400).json({
-        message: "Email is required",
-      });
+    // Validation des données de la requête
+    const { error } = signupSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
     }
 
-    const findUser = await prisma.user.findUnique({
-      where: {
-        email: email,
-      },
+    const { lastName, firstName, phoneNumber, email, password, role } = req.body;
+
+    // Vérifiez si l'e-mail est déjà utilisé
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
     });
-
-    if (findUser) {
-      return res.status(400).json({
-        message: "Email is already taken",
-      });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email is already taken" });
     }
 
+    // Hash du mot de passe
+    const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Création de l'utilisateur
     const newUser = await prisma.user.create({
       data: {
-        email: email,
-        lastName: lastName,
-        firstName: firstName,
-        phoneNumber: phoneNumber,
+        email,
+        lastName,
+        firstName,
+        phoneNumber,
         password: hashedPassword,
-        userType: userType,
+        role,
       },
     });
+ if (role === "bailleur") {
+      await prisma.bailleur.create({
+        data: {
+          userId: newUser.id,
+          name: `${firstName} ${lastName}`,
+          House: { connect: [] },
+        },
+      });
+    } else if (role === "visiteur") {
+      await prisma.visiteur.create({
+        data: {
+          userId: newUser.id,
+          name: `${firstName} ${lastName}`,
+        },
+      });
+    }
 
+    // Générer le jeton JWT et renvoyer la réponse
+    const token = jwt.sign({ userId: newUser.id, role, firstName, lastName }, process.env.JWT_SECRET, {
+      expiresIn: "365d",
+    });
 
-    // Mettre à jour l'utilisateur pour l'associer au bailleur ou au visiteur nouvellement créé
-    // await prisma.user.update({
-    //   where: { id: newUser.id },
-    //   data: {
-    //     bailleurs: userType === "bailleur" ? { connect: { id: role.id } } : undefined,
-    //     visiteurs: userType === "visiteur" ? { connect: { id: role.id } } : undefined,
-    //   },
-    // });
-    const token = generateJWT(newUser.id, newUser.userType);
-    res
-      .status(201)
-      .json({ message: "Utilisateur enregistré avec succès", token, newUser });
+    newUser.token = token;
+
+    res.status(201).json({ message: "Utilisateur enregistré avec succès", token, newUser });
+
   } catch (error) {
-    console.log(error);
     console.error("Erreur lors de la création de l'utilisateur :", error);
-    res
-      .status(500)
-      .json({ error: "Erreur lors de la création de l'utilisateur" });
+    res.status(500).json({ error: "Erreur lors de la création de l'utilisateur" });
   }
 };
 
-const generateJWT = (userId, userType) => {
-  if (!process.env.JWT_SECRET) {
-    throw new Error("JWT_SECRET is not defined");
-  }
-  const token = jwt.sign({ userId, userType }, process.env.JWT_SECRET, {
-    expiresIn: "365d",
-  });
-  return token;
-};
 
 module.exports = { signup };

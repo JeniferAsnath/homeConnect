@@ -9,10 +9,9 @@ const logout = async (req, res) => {
     req.session.destroy(function(err) {
       res.redirect('/login');
     });
+
   }
-  else {
-    res.redirect('/login');
-  }
+  res.clearCookie(process.env.SESSION_NAME)
 
   // Ajouter le token à la liste noire (table blacklisted_tokens)
   await prisma.blacklistedToken.create({

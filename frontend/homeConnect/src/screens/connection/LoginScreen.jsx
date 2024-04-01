@@ -3,7 +3,8 @@ import React, { useState, useRef } from "react";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../../components/StyleLogin";
-import axios from 'axios';
+import axios from "axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen({ updateUserRole }) {
   const navigation = useNavigation();
@@ -18,6 +19,7 @@ export default function LoginScreen({ updateUserRole }) {
     };
 
     try {
+      
       const response = await axios.post(
         "http://192.168.34.89:8001/login",
         data
@@ -26,12 +28,15 @@ export default function LoginScreen({ updateUserRole }) {
       if (response.status === 200) {
         const responseData = response.data;
         if (
-          responseData.userType === "bailleur" ||
-          responseData.userType === "visitor"
+          responseData.role === "bailleur" ||
+          responseData.role === "visitor"
         ) {
-          updateUserRole(responseData.userType); 
+          await AsyncStorage.setItem('authToken', responseData.token);
+
+          updateUserRole(responseData.role);
           navigation.navigate("Main");
           Alert.alert("Success", "Vous êtes connecté avec succès !");
+
         } else {
           Alert.alert("Error", responseData.message);
         }

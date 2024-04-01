@@ -17,6 +17,7 @@ import axios from "axios";
 import Material from "react-native-vector-icons/FontAwesome";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useWindowDimensions } from "react-native";
+import api from '../../../api'
 
 const imgDir = FileSystem.documentDirectory + "images/";
 
@@ -64,7 +65,7 @@ export default function AddImage({ route }) {
       });
   
       if (!result.cancelled) {
-        saveImage(result.uri ? [result.uri] : result.selected)
+        saveImage(result.assets[0].uri)
       }
     } catch (error) {
       console.error("Erreur lors de la sélection d'image :", error);
@@ -99,13 +100,10 @@ export default function AddImage({ route }) {
     setIsLoading(true);
 
     try {
-      const addressData = await axios.post(
-        "http://192.168.34.89:8001/addAddress",
-        address
-      );
+      const addressData = await api.post("/addAddress", address)
       const addressId = addressData?.data?.address?.id;
 
-      const homeData = await axios.post("http://192.168.34.89:8001/addHome", {
+      const homeData = await api.post("/addHome",  {
         title,
         rent,
         description,
