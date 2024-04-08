@@ -15,8 +15,9 @@ import ProfileVisitor from "./src/screens/profile/ProfileVisitor.jsx";
 import ProfileBaiScreen from "./src/screens/ProfileBaiScreen.jsx";
 import LogoutScreen from "./src/screens/connection/Logout.jsx";
 import AddImage from "./src/screens/home/AddImage.jsx";
-import HouseDetailsScreen from '../homeConnect/src/components/homes/homeDetails.jsx';
-import ReservationForm from '../homeConnect/src/screens/visiteur/ReservationForm.jsx';
+import HouseDetailsScreen from "../homeConnect/src/components/homes/homeDetails.jsx";
+import ReservationForm from "../homeConnect/src/screens/visiteur/ReservationForm.jsx";
+import { AuthProvider } from "./src/context/AuthContext.jsx";
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -28,56 +29,58 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, height: "auto" }}>
-      <StatusBar hidden={false} />
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Splash">
-          <Stack.Screen
-            name="Splash"
-            component={SplashScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Accueil"
-            component={AccueilScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="Login" options={{ headerShown: false }}>
-            {() => <LoginScreen updateUserRole={updateUserRole} />}
-          </Stack.Screen>
+    <AuthProvider>
+      <SafeAreaView style={{ flex: 1, height: "auto" }}>
+        <StatusBar hidden={false} />
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Splash">
+            <Stack.Screen
+              name="Splash"
+              component={SplashScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Accueil"
+              component={AccueilScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="Login" options={{ headerShown: false }}>
+              {() => <LoginScreen updateUserRole={updateUserRole} />}
+            </Stack.Screen>
 
-          <Stack.Screen
-            name="Signup"
-            component={SignupScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="Main" options={{ headerShown: false }}>
-            {() => <MainTabs userRole={userRole} />}
-          </Stack.Screen>
-          <Stack.Screen
-            name="Visiteur"
-            component={ProfileVisitor}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Profile"
-            component={Profile}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Bailleur"
-            component={ProfileBaiScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Addimage"
-            component={AddImage}
-            options={{ headerShown: false }}
-          />
-          {/* <Stack.Screen name="HouseDetails" component={HouseDetailsScreen} />
+            <Stack.Screen
+              name="Signup"
+              component={SignupScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="Main" options={{ headerShown: false }}>
+              {() => <MainTabs userRole={userRole} />}
+            </Stack.Screen>
+            <Stack.Screen
+              name="Visiteur"
+              component={ProfileVisitor}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Profile"
+              component={Profile}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Bailleur"
+              component={ProfileBaiScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Addimage"
+              component={AddImage}
+              options={{ headerShown: false }}
+            />
+            {/* <Stack.Screen name="HouseDetails" component={HouseDetailsScreen} />
           <Stack.Screen name="Reservation" component={ReservationForm} /> */}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaView>
+    </AuthProvider>
   );
 }

@@ -3,12 +3,22 @@ import { View, Text, StyleSheet, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Logo from "../../components/Logo.jsx";
 import background from "../../../assets/retro-living-room-interior-design.jpg";
+import { useContext } from "react";
+import { AuthProvider } from "../../context/AuthContext.jsx";
 
 export default function SplashScreen({ navigation }) {
+  const {user, isLoading} = useContext(AuthProvider)
+  
   useEffect(() => {
-    setTimeout(() => {
+    if(user) {
+      navigation.navigate("Main");
+    }
+    else {
       navigation.navigate("Accueil");
-    }, 3000); // Splash screen duration
+    }
+    // setTimeout(() => {
+    //   navigation.navigate("Accueil");
+    // }, 3000); // Splash screen duration
   }, []);
 
   return (
@@ -22,6 +32,7 @@ export default function SplashScreen({ navigation }) {
          <Text className="font-extrabold text-[#F4511E] text-2xl">
           homeConnect
         </Text>
+        
     </View>
   );
 }

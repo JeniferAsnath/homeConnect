@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from "jwt-decode";
-import { decode as base64Decode } from 'base-64'; // Importer la fonction decode de base-64
+import { decode as base64Decode } from "base-64"; // Importer la fonction decode de base-64
 import Header from "../../components/StyleLogin";
 import axios from "axios";
 import api from "../../../api";
+import { AuthProvider } from "../../context/AuthContext";
 // import "core-js/stable/atob";
-global.atob = base64Decode
+global.atob = base64Decode;
 export default function LoginScreen({ updateUserRole }) {
+  const { user, isLoading, saveUserAuth } = useContext(AuthProvider);
+
   const navigation = useNavigation();
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -27,16 +30,18 @@ export default function LoginScreen({ updateUserRole }) {
         const responseData = response.data;
         const token = responseData.token;
 
-        const [header, payload, signature] = token.split('.');
+        const [header, payload, signature] = token.split(".");
 
         const decodedPayload = global.atob(payload);
-        
+
         const payloadData = JSON.parse(decodedPayload);
-        
+
         const userId = payloadData.userId;
-        
-        await AsyncStorage.setItem('userId', userId);
-        
+
+        const userData = { ...payloadData, token };
+
+        // await AsyncStorage.setItem('userId', userId);
+
         console.log("ID de l'utilisateur:", userId);
 
         // Utilisez
@@ -45,8 +50,9 @@ export default function LoginScreen({ updateUserRole }) {
           responseData.role === "visiteur"
         ) {
           updateUserRole(responseData.role);
-          navigation.navigate("Main");
+          // navigation.navigate("Main");
           Alert.alert("Success", "Vous êtes connecté avec succès !");
+          saveUserAuth(userData);
         } else {
           Alert.alert("Error", responseData.message);
         }
