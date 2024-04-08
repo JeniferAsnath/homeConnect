@@ -79,7 +79,7 @@ export default function SignUpScreen() {
 
 
     try {
-      const userData = await axios.post("http://192.168.34.89:8001/signup", {
+      const userData = await axios.post("http://127.0.0.1:8001/signup", {
         lastName: nom,
         firstName: prenom,
         phoneNumber: phoneNumber,
@@ -218,19 +218,19 @@ export default function SignUpScreen() {
           >
             <Text>Choisissez votre type d'utilisateur :</Text>
             <TouchableOpacity
-              onPress={() => handleRoleSelection("visitor")}
-              className="  bg-regal-blue p-2 shadow-inherit shadow-2xl rounded-full"
-            >
-              <Text className="text-lg font-bold text-white text-center ">
-                Visiteur
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
               onPress={() => handleRoleSelection("bailleur")}
               className="  bg-regal-blue p-2 shadow-inherit shadow-2xl rounded-full"
             >
               <Text className="text-lg font-bold  text-white text-center ">
                 Bailleur
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleRoleSelection("visiteur")}
+              className="  bg-regal-blue p-2 shadow-inherit shadow-2xl rounded-full"
+            >
+              <Text className="text-lg font-bold text-white text-center ">
+                Visiteur
               </Text>
             </TouchableOpacity>
           </View>

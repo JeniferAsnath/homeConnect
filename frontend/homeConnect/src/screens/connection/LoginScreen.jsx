@@ -1,42 +1,52 @@
-import { View, Text, TextInput, Alert } from "react-native";
-import React, { useState, useRef } from "react";
-import { TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { jwtDecode } from "jwt-decode";
+import { decode as base64Decode } from 'base-64'; // Importer la fonction decode de base-64
 import Header from "../../components/StyleLogin";
 import axios from "axios";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import api from "../../../api";
+// import "core-js/stable/atob";
+global.atob = base64Decode
 export default function LoginScreen({ updateUserRole }) {
   const navigation = useNavigation();
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [isEmailLogin, setIsEmailLogin] = useState(true);
 
-  const handleLogin = async () => {
-    const data = {
-      identity: emailOrPhone,
-      password: password,
-    };
-
+  // Fonction pour effectuer l'authentification et stocker le token dans AsyncStorage
+  const authenticateUser = async (credentials) => {
     try {
-      
-      const response = await axios.post(
-        "http://192.168.34.89:8001/login",
-        data
+      const response = await api.post(
+        "http://192.168.149.89:8001/login",
+        credentials
       );
 
       if (response.status === 200) {
         const responseData = response.data;
+        const token = responseData.token;
+
+        const [header, payload, signature] = token.split('.');
+
+        const decodedPayload = global.atob(payload);
+        
+        const payloadData = JSON.parse(decodedPayload);
+        
+        const userId = payloadData.userId;
+        
+        await AsyncStorage.setItem('userId', userId);
+        
+        console.log("ID de l'utilisateur:", userId);
+
+        // Utilisez
         if (
           responseData.role === "bailleur" ||
-          responseData.role === "visitor"
+          responseData.role === "visiteur"
         ) {
-          await AsyncStorage.setItem('authToken', responseData.token);
-
           updateUserRole(responseData.role);
           navigation.navigate("Main");
           Alert.alert("Success", "Vous êtes connecté avec succès !");
-
         } else {
           Alert.alert("Error", responseData.message);
         }
@@ -53,6 +63,14 @@ export default function LoginScreen({ updateUserRole }) {
         "Une erreur s'est produite. Veuillez réessayer plus tard."
       );
     }
+  };
+
+  const handleLogin = () => {
+    const data = {
+      identity: emailOrPhone,
+      password: password,
+    };
+    authenticateUser(data);
   };
   return (
     <View className="bg-white h-full w-full">

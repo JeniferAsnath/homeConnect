@@ -21,7 +21,7 @@ async function verifyToken(req, res, next) {
   try {
     const token = req.headers.authorization;
     if (!token) {
-      return res.status(HTTP_STATUS.FORBIDDEN).json({ message: ERROR_MESSAGES.MISSING_TOKEN });
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: ERROR_MESSAGES.MISSING_TOKEN });
     }
 
     const blacklistedToken = await prisma.blacklistedToken.findUnique({
@@ -32,7 +32,7 @@ async function verifyToken(req, res, next) {
       return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: ERROR_MESSAGES.INVALID_TOKEN });
     }
 
-    jwt.verify(token, secretKey, (err, decoded) => {
+    jwt.verify(token.split(' ')[1], secretKey, (err, decoded) => {
       if (err) {
         if (err.name === 'TokenExpiredError') {
           return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: ERROR_MESSAGES.EXPIRED_TOKEN });
@@ -40,7 +40,7 @@ async function verifyToken(req, res, next) {
           return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: ERROR_MESSAGES.INVALID_TOKEN });
         }
       }
-      req.user = decoded;
+      req.user_id = decoded.user_id; // Stockez l'ID de l'utilisateur dans req pour une utilisation ultérieure
       next();
     });
   } catch (error) {
@@ -49,4 +49,4 @@ async function verifyToken(req, res, next) {
   }
 }
 
-module.exports = { verifyToken };
+module.exports = {verifyToken};

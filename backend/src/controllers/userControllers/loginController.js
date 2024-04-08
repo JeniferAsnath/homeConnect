@@ -1,6 +1,9 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { findUserByIdentity, findUserById } = require("../../models/userModels/userModel.js");
+const {
+  findUserByIdentity,
+  findUserById,
+} = require("../../models/userModels/userModel.js");
 const secretKey = process.env.JWT_SECRET;
 
 const HTTP_STATUS = {
@@ -31,21 +34,46 @@ const login = async (req, res) => {
     let user = await findUserByIdentity(identity);
 
     if (!user) {
-      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
-      return res.status(HTTP_STATUS.FORBIDDEN).json({ message: ERROR_MESSAGES.INVALID_PASSWORD });
+      return res
+        .status(HTTP_STATUS.FORBIDDEN)
+        .json({ message: ERROR_MESSAGES.INVALID_PASSWORD });
     }
 
-    const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: "365d" });
-    res.status(HTTP_STATUS.OK).json({ role: user.role, token });
+    // Vérification du rôle avant de générer le token
+    let authorizedActions = [];
+    if (user.role === "bailleur") {
+      authorizedActions = ["create_house"];
+    } else if (user.role === "visiteur") {
+      authorizedActions = ["like_house"];
+    } // Ajoutez d'autres actions autorisées pour d'autres rôles le cas échéant
 
+
+    // Vérification si l'utilisateur a l'action autorisée
+    const userAction = "create_house"; // Remplacez par l'action que vous souhaitez vérifier
+    if (!authorizedActions.includes(userAction)) {
+      return res
+        .status(HTTP_STATUS.FORBIDDEN)
+        .json({ message: "Unauthorized user" });
+    }
+
+    const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, {
+      expiresIn: "365d",
+    });
+    // res.status(HTTP_STATUS.OK).json({ role: user.role, token });
+    res.send({ role: user.role, token })
   } catch (error) {
     console.error("Error logging in:", error);
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ message: ERROR_MESSAGES.SERVER_ERROR });
   }
 };
 
@@ -54,7 +82,9 @@ const profile = async (req, res) => {
 
   try {
     if (!token) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: "Token is missing." });
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json({ message: "Token is missing." });
     }
 
     // Extrait le token de l'en-tête
@@ -69,14 +99,19 @@ const profile = async (req, res) => {
     const user = await findUserById(userId);
 
     if (!user) {
-      return res.status(HTTP_STATUS.NOT_FOUND).json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
+      return res
+        .status(HTTP_STATUS.NOT_FOUND)
+        .json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
     }
 
-    res.status(HTTP_STATUS.OK).send(`Welcome to your profile, ${user.username}!`);
-
+    res
+      .status(HTTP_STATUS.OK)
+      .send(`Welcome to your profile, ${user.username}!`);
   } catch (error) {
     console.error("Error retrieving user information:", error);
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
+    res
+      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      .json({ message: ERROR_MESSAGES.SERVER_ERROR });
   }
 };
 

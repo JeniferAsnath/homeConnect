@@ -1,9 +1,8 @@
 const jwt = require("jsonwebtoken");
 
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE0LCJ1c2VyVHlwZSI6InZpc2l0b3IiLCJpYXQiOjE3MTE2OTE3OTYsImV4cCI6MTcxMTY5NTM5Nn0.1a9z_43UZj_wDi614M1RgSeu3kU-Y60acexCoaxSloE"; // Remplacez par votre token JWT
+const token ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmNGYwYTdkMS01ODE1LTRlYjAtYWYwMi1kYTI3NzQ1NmJhYzYiLCJyb2xlIjoiYmFpbGxldXIiLCJiYWlsbGV1cklkIjoiNDI2NmUwMWItOTZiZS00NTk5LWFlZDMtOTA4ZjM2YmU5N2I5IiwiaWF0IjoxNzEyMTczNzk5LCJleHAiOjE3NDM3MDk3OTl9.jFQClQ-Xdij90wqzdmCAF8e8HRbEFMdYD_dsEBOlu-E";
 const secretKey = process.env.JWT_SECRET;
-jwt.verify(token, 'hello', (err, decoded) => {
+jwt.verify(token, 'faehhhhlljdrccdslr', (err, decoded) => {
   if (err) {
     console.error("Erreur lors de la vérification du token :", err);
   } else {

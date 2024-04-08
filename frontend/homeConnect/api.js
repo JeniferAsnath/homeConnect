@@ -1,13 +1,16 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const instance = axios.create({
+const api = axios.create({
   baseURL: 'http://192.168.34.89:8001', // Remplacez par l'URL de votre backend
 });
 
-instance.interceptors.request.use(
+// Middleware pour inclure automatiquement le token JWT dans le header
+api.interceptors.request.use(
   async (config) => {
+    // Récupérer le token JWT depuis le stockage local
     const token = await AsyncStorage.getItem('token');
+    // Si le token existe, l'inclure dans le header 'Authorization'
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -18,4 +21,4 @@ instance.interceptors.request.use(
   }
 );
 
-export default instance;
+export default api;

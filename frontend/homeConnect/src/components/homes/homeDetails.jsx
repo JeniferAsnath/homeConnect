@@ -1,185 +1,199 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Image, Button } from "react-native";
-import Geolocation from "react-native-geolocation-service"; // Bibliothèque pour la géolocalisation
-import StarRating from "react-native-star-rating"; // Bibliothèque pour les évaluations
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, Button, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import StarRating from 'react-native-star-rating-widget';
+import axios from 'axios';
+import CommentsScreen from './actionOnHomeViews/commentHouse';
+import ReservationForm from '../../screens/visiteur/ReservationForm';
 
-const ApartmentDetails = ({ apartmentId }) => {
-  const [apartmentDetails, setApartmentDetails] = useState(null);
+const HouseDetailsScreen = ({ route }) => {
+  const { houseId } = route.params;
+
+  const [houseDetails, setHouseDetails] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [views, setViews] = useState(0);
   const [satisfactionScore, setSatisfactionScore] = useState(0);
-  const [location, setLocation] = useState(null);
+  const [views, setViews] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [comment, setComment] = useState('');
+  const [showReservationForm, setShowReservationForm] = useState(false);
 
-  <StarRating
-    starSize={30}
-    disabled={false}
-    maxStars={5}
-    rating={satisfactionScore}
-    selectedStar={(rating) => recordSatisfactionScore(rating)}
-  />;
-
-  // Appel de getLocation dans le useEffect pour récupérer la localisation de l'utilisateur
   useEffect(() => {
-    const fetchLocation = async () => {
-      try {
-        const granted = await Geolocation.requestAuthorization("whenInUse");
-        if (granted === "granted") {
-          Geolocation.getCurrentPosition(
-            (position) => {
-              const { latitude, longitude } = position.coords;
-              setLocation({ latitude, longitude });
-            },
-            (error) => {
-              console.error("Erreur de géolocalisation :", error);
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-          );
-        }
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération de la localisation :",
-          error
-        );
-      }
-    };
-
-    fetchLocation();
+    fetchHouseDetails();
+    fetchViews();
   }, []);
-  // Récupérer les détails de l'appartement depuis l'API
-  useEffect(() => {
-    const fetchApartmentDetails = async () => {
-      try {
-        const response = await fetch(
-          `https://api.example.com/apartments/${apartmentId}`
-        );
-        const data = await response.json();
-        setApartmentDetails(data);
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des détails de l'appartement :",
-          error
-        );
-      }
-    };
 
-    fetchApartmentDetails();
-  }, [apartmentId]);
+  const fetchHouseDetails = async () => {
+    try {
+      const response = await axios.get(`https://api.example.com/houses/${houseId}`);
+      setHouseDetails(response.data);
+    } catch (error) {
+      console.error('Error fetching house details:', error);
+    }
+  };
 
-  // Récupérer la localisation de l'utilisateur
-  useEffect(() => {
-    const fetchLocation = async () => {
-      try {
-        // Demander la permission de localisation à l'utilisateur
-        const granted = await Geolocation.requestAuthorization("whenInUse");
-        if (granted === "granted") {
-          // Obtenir les coordonnées GPS de l'utilisateur
-          Geolocation.getCurrentPosition(
-            (position) => {
-              const { latitude, longitude } = position.coords;
-              setLocation({ latitude, longitude });
-            },
-            (error) => {
-              console.error("Erreur de géolocalisation :", error);
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-          );
-        }
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération de la localisation :",
-          error
-        );
-      }
-    };
-
-    fetchLocation();
-  }, []);
+  const fetchViews = async () => {
+    try {
+      const response = await axios.post(`https://api.example.com/houses/${houseId}/views`);
+      setViews(response.data.views);
+    } catch (error) {
+      console.error('Error fetching views:', error);
+    }
+  };
 
   const nextImage = () => {
-    setCurrentImageIndex(
-      (currentImageIndex + 1) % apartmentDetails.images.length
-    );
+    setCurrentImageIndex((currentImageIndex + 1) % houseDetails.images.length);
   };
 
   const previousImage = () => {
     setCurrentImageIndex(
-      (currentImageIndex + apartmentDetails.images.length - 1) %
-        apartmentDetails.images.length
+      (currentImageIndex + houseDetails.images.length - 1) %
+        houseDetails.images.length
     );
   };
 
-  // Fonction pour enregistrer une vue
   const recordView = async () => {
     try {
-      // Envoyer une requête au serveur pour enregistrer une vue sur cet appartement
-      await fetch(
-        `https://api.example.com/apartments/${apartmentId}/record-view`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      // Mettre à jour le nombre de vues localement
+      await axios.post(`https://api.example.com/houses/${houseId}/record-view`);
       setViews(views + 1);
     } catch (error) {
-      console.error("Erreur lors de l'enregistrement de la vue :", error);
+      console.error('Error recording view:', error);
     }
   };
 
-  // Fonction pour enregistrer un score de satisfaction
   const recordSatisfactionScore = async (score) => {
     try {
-      // Envoyer une requête au serveur pour enregistrer le score de satisfaction pour cet appartement
-      await fetch(
-        `https://api.example.com/apartments/${apartmentId}/record-satisfaction`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ score }),
-        }
-      );
-      // Mettre à jour le score de satisfaction localement
+      await axios.post(`https://api.example.com/houses/${houseId}/record-satisfaction`, { score });
       setSatisfactionScore(score);
     } catch (error) {
-      console.error(
-        "Erreur lors de l'enregistrement du score de satisfaction :",
-        error
-      );
+      console.error('Error recording satisfaction score:', error);
     }
   };
 
-  if (!apartmentDetails) {
-    return <Text>Chargement des détails de l'appartement...</Text>;
+  const handlePostComment = async () => {
+    try {
+      await axios.post(`https://api.example.com/houses/${houseId}/comments`, { comment });
+      Alert.alert('Success', 'Comment posted successfully!');
+      setComment('');
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      Alert.alert('Error', 'Failed to post comment. Please try again later.');
+    }
+  };
+
+  const showDatePicker = async () => {
+    try {
+      const { action, year, month, day } = await DatePickerAndroid.open({
+        date: new Date(),
+        mode: 'spinner',
+      });
+      if (action !== DatePickerAndroid.dismissedAction) {
+        const selectedDate = new Date(year, month, day);
+        setSelectedDate(selectedDate);
+      }
+    } catch ({ code, message }) {
+      console.warn('Cannot open date picker', message);
+    }
+  };
+
+  if (!houseDetails) {
+    return <Text>Loading house details...</Text>;
   }
 
   return (
-    <View>
-      <Text>{apartmentDetails.title}</Text>
-      <Text>{apartmentDetails.rent}</Text>
-      <Image
-        source={{ uri: apartmentDetails.images[currentImageIndex] }}
-        style={{ width: 200, height: 200 }}
-      />
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginTop: 10,
-        }}
-      >
-        <Button title="Précédent" onPress={previousImage} />
-        <Button title="Suivant" onPress={nextImage} />
+    <View style={styles.container}>
+      <Image source={{ uri: houseDetails.images[currentImageIndex] }} style={styles.image} />
+      <View style={styles.buttonContainer}>
+        <Button title="Previous" onPress={previousImage} />
+        <Button title="Next" onPress={nextImage} />
       </View>
-      <Text>Contact : {apartmentDetails.contact}</Text>
-      <Text>adress : {apartmentDetails.adress}</Text>
-      <Text>Arrêt de métro : {apartmentDetails.arrêtDeMétro}</Text>
-      <Text>Intersection : {apartmentDetails.intersection}</Text>
+      <Text>{houseDetails.title}</Text>
+
+      <Text>Rent : {houseDetails.rent}</Text>
+      <Text>Address : {houseDetails.address}</Text>
+      <Text>Views: {views}</Text>
+
+      <Text>{houseDetails.description}</Text>
+
+      <Text>Intersection : {houseDetails.intersection}</Text>
+      <StarRating
+        starSize={30}
+        disabled={false}
+        maxStars={5}
+        rating={satisfactionScore}
+        selectedStar={recordSatisfactionScore}
+      />
+      <TextInput
+        style={styles.input}
+        value={comment}
+        onChangeText={setComment}
+        placeholder="Enter your comment"
+        multiline
+      />
+      <TouchableOpacity style={styles.button} onPress={handlePostComment}>
+        <Text style={styles.buttonText}>Post Comment</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={showDatePicker}>
+        <Text>Select Visit Date</Text>
+      </TouchableOpacity>
+      {selectedDate && (
+        <Text>Selected Date: {selectedDate.toDateString()}</Text>
+      )}
+      <TouchableOpacity onPress={() => setShowReservationForm(true)}>
+        <Text>Reserve Visit</Text>
+      </TouchableOpacity>
+      {showReservationForm && (
+        <ReservationForm
+          houseId={houseId}
+          onSubmit={() => {
+            setShowReservationForm(false);
+            // Update other state or perform other actions after submission
+          }}
+          onCancel={() => setShowReservationForm(false)}
+        />
+      )}
+      <CommentsScreen houseId={houseId} />
+      <StarRating
+        disabled={false}
+        maxStars={5}
+        rating={satisfactionScore}
+        selectedStar={recordSatisfactionScore}
+      />
+      <Button title="Rate" onPress={() => handleRate(3)} />
+      <Button title="Like" onPress={() => handleToggleLike(true)} />
     </View>
   );
 };
 
-export default ApartmentDetails;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: 200,
+    height: 200,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  input: {
+    height: 100,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginTop: 10,
+    paddingHorizontal: 10,
+    textAlignVertical: 'top',
+  },
+  button: {
+    backgroundColor: 'blue',
+    padding: 10,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: 'white',
+  },
+});
+
+export default HouseDetailsScreen;

@@ -8,11 +8,11 @@ const userSignupRoute = require("./src/routes/userRoutes/signupRoute.js");
 const userLoginRoute = require("./src/routes/userRoutes/loginRoute.js");
 const logoutRoute = require("./src/routes/userRoutes/logoutRoute.js");
 const userRoutes = require("./src/routes/userRoute.js");
-const addHomeRoute = require("./src/routes/homeRoute.js");
-const { createAddress } = require("./src/controllers/addressController.js");
-const { profile } = require("./src/controllers/userControllers/loginController.js");
+const addHomeRoute = require("./src/routes/postHouseRoutes/homeRoute.js");
+const { createAddress } = require("./src/controllers/houseControllers/creationHouse/addressController.js");
+const  profile  = require("./src/routes/userRoutes/loginRoute.js");
 const { createBailleur } = require("./src/controllers/bailleurController.js");
-
+const addImage = require ("./src/routes/addImage.js")
 const app = express();
 dotenv.config();
 
@@ -58,15 +58,16 @@ app.use("/profile", verifyToken, profile);
 app.use("/logout", verifyToken, logoutRoute);
 app.use("/user", userRoutes);
 app.use("/bailleur", createBailleur);
-app.use("/addHome", addHomeRoute);
+app.use("/addHome",  addHomeRoute);
 app.use("/addAddress", createAddress);
-app.use("/homes", addHomeRoute);
+app.use("/addImage", addImage);
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error("Error:", err);
   res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: ERROR_MESSAGES.SERVER_ERROR });
 });
-app.listen(PORT, "192.168.34.89", () => {
+app.listen(PORT, "192.168.149.89", () => {
   console.log(`App listening on port ${PORT}`);
 });

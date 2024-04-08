@@ -48,37 +48,41 @@ const signup = async (req, res) => {
         role,
       },
     });
- if (role === "bailleur") {
-      await prisma.bailleur.create({
+
+    let additionalData;
+    if (role === "bailleur") {
+      const bailleur = await prisma.bailleur.create({
         data: {
+          id : newUser.id,
           userId: newUser.id,
           name: `${firstName} ${lastName}`,
-          House: { connect: [] },
+          houses: { connect: [] },
         },
       });
+      additionalData = { bailleurId: bailleur.id };
     } else if (role === "visiteur") {
-      await prisma.visiteur.create({
+      const visiteur = await prisma.visiteur.create({
         data: {
+          id : newUser.id,
           userId: newUser.id,
           name: `${firstName} ${lastName}`,
         },
       });
+      additionalData = { visiteurId: visiteur.id };
     }
 
     // Générer le jeton JWT et renvoyer la réponse
-    const token = jwt.sign({ userId: newUser.id, role, firstName, lastName }, process.env.JWT_SECRET, {
-      expiresIn: "365d",
+    const token = jwt.sign({  ...additionalData, userId: newUser.id, role, }, process.env.JWT_SECRET, {
+      expiresIn: "365d"
     });
-
+  
     newUser.token = token;
 
     res.status(201).json({ message: "Utilisateur enregistré avec succès", token, newUser });
-
   } catch (error) {
     console.error("Erreur lors de la création de l'utilisateur :", error);
     res.status(500).json({ error: "Erreur lors de la création de l'utilisateur" });
   }
 };
-
 
 module.exports = { signup };

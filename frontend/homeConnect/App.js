@@ -15,6 +15,8 @@ import ProfileVisitor from "./src/screens/profile/ProfileVisitor.jsx";
 import ProfileBaiScreen from "./src/screens/ProfileBaiScreen.jsx";
 import LogoutScreen from "./src/screens/connection/Logout.jsx";
 import AddImage from "./src/screens/home/AddImage.jsx";
+import HouseDetailsScreen from '../homeConnect/src/components/homes/homeDetails.jsx';
+import ReservationForm from '../homeConnect/src/screens/visiteur/ReservationForm.jsx';
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -40,7 +42,7 @@ export default function App() {
             component={AccueilScreen}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Login"  options={{ headerShown: false }}>
+          <Stack.Screen name="Login" options={{ headerShown: false }}>
             {() => <LoginScreen updateUserRole={updateUserRole} />}
           </Stack.Screen>
 
@@ -49,7 +51,7 @@ export default function App() {
             component={SignupScreen}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Main"  options={{ headerShown: false }}>
+          <Stack.Screen name="Main" options={{ headerShown: false }}>
             {() => <MainTabs userRole={userRole} />}
           </Stack.Screen>
           <Stack.Screen
@@ -67,11 +69,13 @@ export default function App() {
             component={ProfileBaiScreen}
             options={{ headerShown: false }}
           />
-           <Stack.Screen
+          <Stack.Screen
             name="Addimage"
             component={AddImage}
             options={{ headerShown: false }}
           />
+          {/* <Stack.Screen name="HouseDetails" component={HouseDetailsScreen} />
+          <Stack.Screen name="Reservation" component={ReservationForm} /> */}
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

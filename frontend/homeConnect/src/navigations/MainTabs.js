@@ -4,7 +4,7 @@ import { StatusBar } from 'expo';
 import Home from "../screens/HomeScreen.jsx";
 import Explore from "../screens/ExploreScreen.jsx";
 import Favorite from "../screens/FavoriteScreen.jsx";
-import Message from "../screens/MessagerieScreen.jsx";
+import Message from "../components/message/Message.jsx";
 import AddHome from '../screens/home/AddHome.jsx'
 import Profile from "../screens/profile/ProfileScreen.jsx";
 import ProfileBaiScreen from '../screens/ProfileBaiScreen.jsx';
