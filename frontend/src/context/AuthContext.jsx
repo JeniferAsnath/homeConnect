@@ -1,28 +1,34 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { AsyncStorage } from 'react-native';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const AuthContext = createContext();
-
-export const useAuth = () => useContext(AuthContext);
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
 
-  const verifyAuth = () => {
-    const userData = AsyncStorage.get('userData');
-    setUser(
-      JSON.parse(userData)
-    )
-    setIsLoading(false);
-  }
-
-  const saveUserAuth = (userData) => {
+  const verifyAuth = async () => {
     setIsLoading(true);
-    const userData = AsyncStorage.set('userData', JSON.stringify(userData));
-    setUser(userData);
+    try {
+      const jsonValue = await AsyncStorage.getItem("userData");
+      jsonValue != null ? setUser(JSON.parse(jsonValue)) : null;
+    } catch (error) {
+      //
+    }
     setIsLoading(false);
-  }
+  };
+
+  const saveUserAuth = async (userData) => {
+    setIsLoading(true);
+    try {
+      const jsonValue = JSON.stringify(userData);
+      await AsyncStorage.setItem("userData", jsonValue);
+      setUser(userData);
+    } catch (error) {
+      //
+    }
+    setIsLoading(false);
+  };
 
   useEffect(() => {
     verifyAuth();
@@ -33,7 +39,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         isLoading,
-        saveUserAuth
+        saveUserAuth,
       }}
     >
       {children}

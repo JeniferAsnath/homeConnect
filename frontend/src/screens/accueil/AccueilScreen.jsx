@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Button, StyleSheet, Image,ImageBackground } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import maison from "../../../assets/rendu-3d-du-modele-maison.jpg";
 import Bouton from "../../components/Bouton.jsx";
@@ -17,9 +17,14 @@ export default function AccueilScreen({ navigation }) {
         <Text className=" text-center font-bold my-8 ">
           Connectez-vous aux Meilleures Locations de Maisons
         </Text>
-        <Bouton name="Se connecter" onPress={() => navigation.navigate("Login")} />
-        <Bouton name="S'enregistrer" onPress={() => navigation.navigate("Signup")} />
-
+        <Bouton
+          name="Se connecter"
+          onPress={() => navigation.navigate("Login")}
+        />
+        <Bouton
+          name="S'enregistrer"
+          onPress={() => navigation.navigate("Signup")}
+        />
       </View>
     </View>
   );

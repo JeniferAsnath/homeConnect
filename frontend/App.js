@@ -9,14 +9,10 @@ import SplashScreen from "./src/screens/accueil/SplashScreen.jsx";
 import AccueilScreen from "./src/screens/accueil/AccueilScreen.jsx";
 import LoginScreen from "./src/screens/connection/LoginScreen.jsx";
 import SignupScreen from "./src/screens/connection/SignUpScreen.jsx";
-import NotificationScreen from "./src/screens/Notifications.jsx";
 import Profile from "./src/screens/profile/ProfileScreen.jsx";
 import ProfileVisitor from "./src/screens/profile/ProfileVisitor.jsx";
 import ProfileBaiScreen from "./src/screens/ProfileBaiScreen.jsx";
-import LogoutScreen from "./src/screens/connection/Logout.jsx";
 import AddImage from "./src/screens/home/AddImage.jsx";
-import HouseDetailsScreen from "../homeConnect/src/components/homes/homeDetails.jsx";
-import ReservationForm from "../homeConnect/src/screens/visiteur/ReservationForm.jsx";
 import { AuthProvider } from "./src/context/AuthContext.jsx";
 
 export default function App() {
@@ -29,8 +25,10 @@ export default function App() {
   };
 
   return (
-    <AuthProvider>
-      <SafeAreaView style={{ flex: 1, height: "auto" }}>
+    <SafeAreaView style={{
+      flex: 1, height: "auto"
+    }}>
+      <AuthProvider>
         <StatusBar hidden={false} />
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Splash">
@@ -80,7 +78,7 @@ export default function App() {
           <Stack.Screen name="Reservation" component={ReservationForm} /> */}
           </Stack.Navigator>
         </NavigationContainer>
-      </SafeAreaView>
-    </AuthProvider>
+      </AuthProvider>
+    </SafeAreaView >
   );
 }

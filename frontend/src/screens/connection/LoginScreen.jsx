@@ -7,11 +7,11 @@ import { decode as base64Decode } from "base-64"; // Importer la fonction decode
 import Header from "../../components/StyleLogin";
 import axios from "axios";
 import api from "../../../api";
-import { AuthProvider } from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 // import "core-js/stable/atob";
 global.atob = base64Decode;
 export default function LoginScreen({ updateUserRole }) {
-  const { user, isLoading, saveUserAuth } = useContext(AuthProvider);
+  const { user, isLoading, saveUserAuth } = useContext(AuthContext);
 
   const navigation = useNavigation();
   const [emailOrPhone, setEmailOrPhone] = useState("");
