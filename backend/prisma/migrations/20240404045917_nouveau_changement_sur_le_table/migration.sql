@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "Bailleur" ALTER COLUMN "name" DROP DEFAULT,
+ALTER COLUMN "houseId" DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE "Visiteur" ALTER COLUMN "name" DROP DEFAULT,
+ALTER COLUMN "houseId" DROP DEFAULT;

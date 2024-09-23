@@ -1,0 +1,169 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  firstName     String         @db.VarChar(255)
+  lastName      String         @db.VarChar(255)
+  email         String         @unique @db.VarChar(255)
+  phoneNumber   String         @unique @db.VarChar(255)
+  password      String
+  role          String
+  bailleurs     Bailleur[]
+  visiteurs     Visiteur[]
+  comments      Comment[]
+  evaluations   Evaluation[]
+  notifications Notification[]
+  message       Message[]
+}
+
+model Bailleur {
+  id           String        @id @map(name: "id")
+  user         User          @relation(fields: [userId], references: [id])
+  userId       String        @map(name: "userId")
+  name         String
+  reservations Reservation[]
+  houses       House[]
+  houseId      String        @default("")
+}
+
+model Visiteur {
+  id           String        @id @map(name: "id")
+  user         User          @relation(fields: [userId], references: [id])
+  userId       String        @map(name: "userId")
+  name         String
+  likes        Like[]
+  reservations Reservation[]
+  comments     Comment[]
+  evaluation   Evaluation[]
+  houses       House[]       @relation("VisiteursDeLaMaison")
+}
+
+model Address {
+  id         String  @id @default(uuid())
+  street     String
+  city       String
+  country    String
+  postalCode String
+  houses     House[]
+}
+
+model House {
+  id           String        @id @default(uuid())
+  title        String
+  address      Address       @relation(fields: [addressId], references: [id])
+  addressId    String
+  description  String
+  rent         Float
+  bedrooms     Int
+  bathrooms    Int
+  images       Images[]
+  bailleur     Bailleur      @relation(fields: [bailleurId], references: [id])
+  bailleurId   String
+  likes        Like[]
+  reservations Reservation[]
+  visiteurs    Visiteur[]    @relation("VisiteursDeLaMaison")
+  visiteurId   String?           
+  comment      Comment[]
+  evaluation   Evaluation[]
+  messages     Message[]
+}
+
+model Images {
+  id         String   @id @default(uuid())
+  url        String
+  house      House    @relation(fields: [houseId], references: [id])
+  houseId    String
+}
+
+model Like {
+  id         String   @id @default(uuid())
+  visiteur   Visiteur @relation(fields: [visiteurId], references: [id])
+  visiteurId String
+  house      House    @relation(fields: [houseId], references: [id])
+  houseId    String
+}
+
+model Reservation {
+  id         String   @id @default(uuid())
+  visitDate  DateTime
+  visiteur   Visiteur @relation(fields: [visiteurId], references: [id])
+  visiteurId String
+  house      House    @relation(fields: [houseId], references: [id])
+  houseId    String
+  bailleur   Bailleur @relation(fields: [bailleurId], references: [id])
+  bailleurId String
+}
+
+model Comment {
+  id         String    @id @default(uuid())
+  content    String
+  date       DateTime
+  user       User      @relation(fields: [userId], references: [id])
+  userId     String
+  house      House     @relation(fields: [houseId], references: [id])
+  houseId    String
+  Visiteur   Visiteur? @relation(fields: [visiteurId], references: [id])
+  visiteurId String?
+}
+
+model Evaluation {
+  id         String    @id @default(uuid())
+  rating     Int
+  comment    String?
+  date       DateTime
+  user       User      @relation(fields: [userId], references: [id])
+  userId     String
+  house      House     @relation(fields: [houseId], references: [id])
+  houseId    String
+  Visiteur   Visiteur? @relation(fields: [visiteurId], references: [id])
+  visiteurId String?
+}
+
+model Notification {
+  id      String   @id @default(uuid())
+  type    String
+  content String
+  date    DateTime
+  status  String
+  user    User     @relation(fields: [userId], references: [id])
+  userId  String
+}
+
+model HouseStats {
+  id                   String @id @default(uuid())
+  totalHousesPublished Int
+  totalVisitsBooked    Int
+  totalLikesReceived   Int
+  totalViewsReceived   Int
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  house   House  @relation(fields: [houseId], references: [id])
+  houseId String
+
+  sender   User   @relation(fields: [senderId], references: [id])
+  senderId String
+}
+
+model BlacklistedToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  createdAt DateTime @default(now())
+}
